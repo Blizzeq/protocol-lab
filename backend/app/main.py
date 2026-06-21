@@ -7,8 +7,11 @@ MCP, Connect) — to filar architektury projektu.
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_pagination import add_pagination
 
+from app.api.v1 import api_router
 from app.core.config import get_settings
+from app.core.errors import register_error_handlers
 
 settings = get_settings()
 
@@ -28,6 +31,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+register_error_handlers(app)
+app.include_router(api_router)
+add_pagination(app)
 
 
 @app.get("/health", tags=["meta"], summary="Health check")

@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     # Logowanie zapytań SQL (głośne — domyślnie off, włącz do debugowania)
     db_echo: bool = False
 
+    # Auth / JWT
+    jwt_secret: str = "dev-insecure-change-me-please"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60
+
     # CORS — originy frontendu (Next.js). Lista po przecinku w env.
     cors_origins: str = "http://localhost:3000"
 

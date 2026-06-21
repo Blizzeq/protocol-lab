@@ -8,9 +8,9 @@ from sqlalchemy import Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.task_board import Board
-from app.realtime.events import emit
 from app.schemas.board import BoardCreate, BoardUpdate
 from app.services.exceptions import NotFoundError, PermissionDeniedError
+from app.webhooks.dispatch import publish_event
 
 
 def boards_query(owner_id: uuid.UUID) -> Select:
@@ -23,8 +23,8 @@ async def create_board(db: AsyncSession, *, owner_id: uuid.UUID, data: BoardCrea
     db.add(board)
     await db.commit()
     await db.refresh(board)
-    await emit(
-        "board.created", board_id=board.id, payload={"id": str(board.id), "name": board.name}
+    await publish_event(
+        db, "board.created", board_id=board.id, payload={"id": str(board.id), "name": board.name}
     )
     return board
 

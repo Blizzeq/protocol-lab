@@ -5,6 +5,9 @@ Creates the application, wires up middleware and routers. Domain logic lives in
 MCP, Connect) — this is the cornerstone of the project's architecture.
 """
 
+import asyncio
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
@@ -18,8 +21,21 @@ from app.core.errors import register_error_handlers
 from app.core.ratelimit import limiter
 from app.graphql.context import get_context
 from app.graphql.schema import schema as graphql_schema
+from app.webhooks.worker import poller
 
 settings = get_settings()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Start the webhook delivery poller only when a database is configured.
+    task = asyncio.create_task(poller()) if settings.database_url else None
+    try:
+        yield
+    finally:
+        if task is not None:
+            task.cancel()
+
 
 app = FastAPI(
     title="Protocol Lab API",
@@ -28,6 +44,7 @@ app = FastAPI(
         "One dataset exposed through every modern information-exchange paradigm: "
         "REST, GraphQL, gRPC/Connect, WebSocket, SSE, webhooks, and MCP."
     ),
+    lifespan=lifespan,
 )
 
 app.add_middleware(

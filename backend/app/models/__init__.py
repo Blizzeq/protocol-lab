@@ -9,6 +9,7 @@ from app.models.task_board import (
     User,
     task_tags,
 )
+from app.models.webhooks import WebhookDelivery, WebhookEndpoint, WebhookInbox
 
 __all__ = [
     "ApiKey",
@@ -19,5 +20,8 @@ __all__ = [
     "TaskPriority",
     "TaskStatus",
     "User",
+    "WebhookDelivery",
+    "WebhookEndpoint",
+    "WebhookInbox",
     "task_tags",
 ]

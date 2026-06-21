@@ -6,6 +6,7 @@ from fastapi import FastAPI, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.services.exceptions import (
@@ -71,6 +72,15 @@ def register_error_handlers(app: FastAPI) -> None:
             detail="Żądanie nie przeszło walidacji.",
             instance=request.url.path,
             errors=jsonable_encoder(exc.errors()),
+        )
+
+    @app.exception_handler(RateLimitExceeded)
+    async def _rate_limited(request: Request, exc: RateLimitExceeded) -> JSONResponse:
+        return _problem(
+            429,
+            "Too Many Requests",
+            detail=f"Przekroczono limit żądań ({exc.detail}).",
+            instance=request.url.path,
         )
 
     @app.exception_handler(StarletteHTTPException)

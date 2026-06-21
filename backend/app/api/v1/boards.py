@@ -6,7 +6,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, status
 from fastapi_pagination import Page
-from fastapi_pagination.ext.sqlalchemy import paginate
+from fastapi_pagination.ext.sqlalchemy import apaginate
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.deps import get_current_user
@@ -24,7 +24,7 @@ router = APIRouter(prefix="/boards", tags=["boards"])
 async def list_boards(
     user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ) -> Page[BoardRead]:
-    return await paginate(db, board_service.boards_query(user.id))
+    return await apaginate(db, board_service.boards_query(user.id))
 
 
 @router.post("", response_model=BoardRead, status_code=status.HTTP_201_CREATED)
@@ -81,7 +81,7 @@ async def list_tasks(
     db: AsyncSession = Depends(get_db),
 ) -> Page[TaskRead]:
     board = await board_service.get_owned_board(db, owner_id=user.id, board_id=board_id)
-    return await paginate(db, task_service.tasks_query(board.id, status))
+    return await apaginate(db, task_service.tasks_query(board.id, status))
 
 
 @router.post(

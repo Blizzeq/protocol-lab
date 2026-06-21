@@ -19,7 +19,8 @@ class Settings(BaseSettings):
     db_echo: bool = False
 
     # Auth / JWT
-    jwt_secret: str = "dev-insecure-change-me-please"
+    # Min. 32 bajty dla HS256. To wartość DEV — w produkcji ustaw przez env.
+    jwt_secret: str = "dev-only-insecure-jwt-secret-change-me-in-production"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
 

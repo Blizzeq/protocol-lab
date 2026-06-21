@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     database_url: str | None = None
     redis_url: str | None = None
 
+    # Logowanie zapytań SQL (głośne — domyślnie off, włącz do debugowania)
+    db_echo: bool = False
+
     # CORS — originy frontendu (Next.js). Lista po przecinku w env.
     cors_origins: str = "http://localhost:3000"
 

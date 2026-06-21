@@ -31,7 +31,7 @@ def get_engine() -> AsyncEngine:
         settings.database_url,
         poolclass=NullPool,  # pooler Supabase sam zarządza pulą połączeń
         connect_args={"statement_cache_size": 0},  # wymóg asyncpg za pgBouncer (transaction mode)
-        echo=settings.environment == "development",
+        echo=settings.db_echo,
     )
 
 

@@ -1,7 +1,7 @@
-"""DataLoadery — batchowanie zapytań relacyjnych (anty-N+1).
+"""DataLoaders — batching of relational queries (anti-N+1).
 
-Tworzone PER REQUEST (w kontekście), nigdy globalnie — inaczej cache wyciekałby
-między requestami/użytkownikami.
+Created PER REQUEST (in the context), never globally — otherwise the cache would leak
+between requests/users.
 """
 
 from __future__ import annotations

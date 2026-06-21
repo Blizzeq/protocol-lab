@@ -1,4 +1,4 @@
-"""Router tagów: tagi tablicy + przypisywanie tagów do zadań."""
+"""Tags router: board tags + assigning tags to tasks."""
 
 from __future__ import annotations
 

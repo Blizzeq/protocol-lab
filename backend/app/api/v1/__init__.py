@@ -1,4 +1,4 @@
-"""Agregacja routerów REST v1."""
+"""Aggregation of REST v1 routers."""
 
 from fastapi import APIRouter
 

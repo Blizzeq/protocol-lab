@@ -1,4 +1,4 @@
-"""Serwis tablic (boards) — logika + autoryzacja właściciela. Warstwa współdzielona."""
+"""Board service — logic + owner authorization. Shared layer."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from app.services.exceptions import NotFoundError, PermissionDeniedError
 
 
 def boards_query(owner_id: uuid.UUID) -> Select:
-    """Select tablic użytkownika (do paginacji)."""
+    """Select the user's boards (for pagination)."""
     return select(Board).where(Board.owner_id == owner_id).order_by(Board.created_at.desc())
 
 
@@ -30,9 +30,9 @@ async def get_owned_board(
 ) -> Board:
     board = await db.get(Board, board_id)
     if board is None:
-        raise NotFoundError("Tablica nie istnieje.")
+        raise NotFoundError("Board not found.")
     if board.owner_id != owner_id:
-        raise PermissionDeniedError("Brak dostępu do tej tablicy.")
+        raise PermissionDeniedError("You do not have access to this board.")
     return board
 
 

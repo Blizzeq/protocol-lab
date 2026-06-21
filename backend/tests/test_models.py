@@ -1,6 +1,6 @@
-"""Sanity-check warstwy ORM — nie wymaga połączenia z bazą.
+"""Sanity-check of the ORM layer — does not require a database connection.
 
-Sprawdza, że modele się kompilują i są kwalifikowane schematem `protocol_lab`.
+Verifies that the models compile and are qualified with the `protocol_lab` schema.
 """
 
 from app.db.base import SCHEMA, Base
@@ -19,7 +19,7 @@ def test_tables_registered_under_schema():
     }
     names = {t.name for t in Base.metadata.tables.values()}
     assert expected <= names
-    # wszystkie tabele kwalifikowane schematem protocol_lab
+    # all tables qualified with the protocol_lab schema
     assert all(t.schema == SCHEMA for t in Base.metadata.tables.values())
 
 

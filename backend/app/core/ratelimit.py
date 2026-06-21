@@ -1,7 +1,7 @@
-"""Rate limiting przez slowapi.
+"""Rate limiting via slowapi.
 
-In-memory (wystarcza dla dev / pojedynczej instancji). Produkcyjnie warto podłączyć
-backend Redis (storage_uri), aby limit działał między procesami/instancjami.
+In-memory (sufficient for dev / a single instance). In production it is worth connecting
+a Redis backend (storage_uri) so the limit works across processes/instances.
 """
 
 from slowapi import Limiter

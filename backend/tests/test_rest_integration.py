@@ -1,7 +1,7 @@
-"""Testy integracyjne REST — wymagają działającej bazy (DATABASE_URL).
+"""REST integration tests — require a working database (DATABASE_URL).
 
-Wspólne fixture (client, register, cleanup_emails) są w conftest.py.
-W CI bez sekretów testy są pomijane.
+Shared fixtures (client, register, cleanup_emails) live in conftest.py.
+In CI without secrets the tests are skipped.
 """
 
 import pytest
@@ -10,7 +10,7 @@ from app.core.config import get_settings
 
 pytestmark = pytest.mark.skipif(
     get_settings().database_url is None,
-    reason="DATABASE_URL nie skonfigurowane (np. CI bez sekretów)",
+    reason="DATABASE_URL not configured (e.g. CI without secrets)",
 )
 
 

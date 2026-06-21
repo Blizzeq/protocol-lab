@@ -1,4 +1,4 @@
-"""Router tablic (boards) + zagnieżdżone listowanie/tworzenie zadań."""
+"""Boards router + nested listing/creation of tasks."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from app.services import tasks as task_service
 router = APIRouter(prefix="/boards", tags=["boards"])
 
 
-@router.get("", response_model=Page[BoardRead], summary="Lista moich tablic (paginowana)")
+@router.get("", response_model=Page[BoardRead], summary="List my boards (paginated)")
 async def list_boards(
     user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ) -> Page[BoardRead]:
@@ -66,13 +66,13 @@ async def delete_board(
     await board_service.delete_board(db, board=board)
 
 
-# --- Zadania w obrębie tablicy ---
+# --- Tasks within a board ---
 
 
 @router.get(
     "/{board_id}/tasks",
     response_model=Page[TaskRead],
-    summary="Lista zadań tablicy (paginowana, filtr po statusie)",
+    summary="List board tasks (paginated, filter by status)",
 )
 async def list_tasks(
     board_id: uuid.UUID,

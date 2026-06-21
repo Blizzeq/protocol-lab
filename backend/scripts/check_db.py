@@ -1,13 +1,13 @@
-"""Szybki test łączności z bazą — połączenie + wersja PG + listing tabel protocol_lab.
+"""Quick database connectivity check — connection + PG version + listing protocol_lab tables.
 
-Uruchom: uv run python scripts/check_db.py
+Run: uv run python scripts/check_db.py
 """
 
 import asyncio
 import pathlib
 import sys
 
-# Pozwól uruchamiać skrypt bezpośrednio (dodaj katalog backend/ do ścieżki importów).
+# Allow running the script directly (add the backend/ directory to the import path).
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 
 from sqlalchemy import text  # noqa: E402
@@ -35,9 +35,9 @@ async def main() -> None:
     finally:
         await engine.dispose()
 
-    print("OK — połączono z Supabase ✅")
+    print("OK — connected to Supabase ✅")
     print("Postgres:", version.split(" on ")[0])
-    print(f"Tabele w protocol_lab ({len(tables)}):", ", ".join(tables))
+    print(f"Tables in protocol_lab ({len(tables)}):", ", ".join(tables))
 
 
 if __name__ == "__main__":

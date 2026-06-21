@@ -1,7 +1,7 @@
-"""Kontekst GraphQL: sesja DB, bieżący użytkownik (opcjonalny) i DataLoadery.
+"""GraphQL context: DB session, current user (optional) and DataLoaders.
 
-Uwierzytelnienie działa tak samo jak w REST (Bearer JWT lub X-API-Key) — reużywamy
-schematów bezpieczeństwa i serwisu auth.
+Authentication works the same way as in REST (Bearer JWT or X-API-Key) — we reuse
+the security schemes and the auth service.
 """
 
 from __future__ import annotations
@@ -61,8 +61,8 @@ async def get_context(
 
 
 def require_user(info) -> User:
-    """Zwraca zalogowanego użytkownika z kontekstu albo zgłasza błąd auth."""
+    """Returns the logged-in user from the context or raises an auth error."""
     user = info.context.user
     if user is None:
-        raise AuthenticationError("Wymagane uwierzytelnienie (Bearer token lub X-API-Key).")
+        raise AuthenticationError("Authentication required (Bearer token or X-API-Key).")
     return user

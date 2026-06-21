@@ -1,12 +1,12 @@
 import Link from "next/link";
 
 const PARADIGMS = [
-  { slug: "rest", name: "REST", blurb: "Fundament — CRUD po HTTP, OpenAPI, paginacja, auth", status: "✓ M1" },
-  { slug: "graphql", name: "GraphQL", blurb: "Klient wybiera dokładnie te pola, których chce", status: "✓ M2" },
-  { slug: "realtime", name: "WebSocket + SSE", blurb: "Dane w czasie rzeczywistym — serwer wypycha zmiany", status: "M3" },
-  { slug: "webhooks", name: "Webhooki", blurb: "Zdarzenia zamiast odpytywania, z podpisem HMAC", status: "M4" },
-  { slug: "grpc", name: "gRPC / Connect", blurb: "Typowany kontrakt (protobuf), wywołanie z przeglądarki", status: "M5" },
-  { slug: "mcp", name: "MCP", blurb: "Udostępnienie danych modelom AI (Claude)", status: "M6" },
+  { slug: "rest", name: "REST", blurb: "The foundation — CRUD over HTTP, OpenAPI, pagination, auth", status: "✓ M1" },
+  { slug: "graphql", name: "GraphQL", blurb: "The client picks exactly the fields it wants", status: "✓ M2" },
+  { slug: "realtime", name: "WebSocket + SSE", blurb: "Real-time data — the server pushes changes", status: "M3" },
+  { slug: "webhooks", name: "Webhooks", blurb: "Events instead of polling, with an HMAC signature", status: "M4" },
+  { slug: "grpc", name: "gRPC / Connect", blurb: "Typed contract (protobuf), called from the browser", status: "M5" },
+  { slug: "mcp", name: "MCP", blurb: "Exposing data to AI models (Claude)", status: "M6" },
 ] as const;
 
 export default function Home() {
@@ -14,13 +14,13 @@ export default function Home() {
     <main className="mx-auto max-w-4xl px-6 py-16">
       <h1 className="text-3xl font-bold">Protocol Lab</h1>
       <p className="mt-2 text-gray-600 dark:text-gray-400">
-        Jeden zbiór danych (kolaboracyjna tablica zadań) udostępniony przez wszystkie
-        nowoczesne paradygmaty wymiany informacji. Projekt portfolio.
+        One dataset (a collaborative task board) exposed through every modern
+        data-exchange paradigm. A portfolio project.
       </p>
 
       <p className="mt-4 flex flex-wrap gap-4 text-sm">
         <a className="font-medium text-blue-600 underline dark:text-blue-400" href="/reference">
-          → Dokumentacja REST (Scalar)
+          → REST documentation (Scalar)
         </a>
         <Link className="font-medium text-blue-600 underline dark:text-blue-400" href="/rest-vs-graphql">
           → Demo: REST vs GraphQL
@@ -42,7 +42,7 @@ export default function Home() {
       </ul>
 
       <p className="mt-10 text-sm text-gray-500">
-        Szkielet (M0). Wygląd dopracujemy później przez Claude Design (M8).
+        Scaffold (M0). The look will be polished later with Claude Design (M8).
       </p>
     </main>
   );

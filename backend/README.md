@@ -1,18 +1,18 @@
 # Protocol Lab — Backend
 
-FastAPI udostępniający jeden zbiór danych (kolaboracyjna tablica zadań) przez
-wszystkie nowoczesne paradygmaty wymiany informacji. Logika domenowa żyje w
-`app/services/` i jest współdzielona przez wszystkie protokoły.
+FastAPI exposing a single dataset (a collaborative task board) through
+all modern information-exchange paradigms. The domain logic lives in
+`app/services/` and is shared across all protocols.
 
-## Szybki start (lokalnie)
+## Quick start (locally)
 
 ```bash
-uv sync                          # zainstaluj zależności
+uv sync                          # install dependencies
 uv run uvicorn app.main:app --reload
 # http://localhost:8000/health, /docs
 ```
 
-## Testy i lint
+## Tests and lint
 
 ```bash
 uv run pytest

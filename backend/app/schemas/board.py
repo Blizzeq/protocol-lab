@@ -1,4 +1,4 @@
-"""Schematy Pydantic dla tablic (boards)."""
+"""Pydantic schemas for boards."""
 
 from __future__ import annotations
 

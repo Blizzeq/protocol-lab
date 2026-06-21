@@ -1,4 +1,4 @@
-"""Serwis auth: rejestracja, logowanie, klucze API. Warstwa współdzielona."""
+"""Auth service: registration, login, API keys. Shared layer."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ async def register_user(
 ) -> User:
     existing = await db.scalar(select(User).where(User.email == email))
     if existing is not None:
-        raise ConflictError("Użytkownik z tym adresem e-mail już istnieje.")
+        raise ConflictError("A user with this email already exists.")
     user = User(email=email, full_name=full_name, hashed_password=hash_password(password))
     db.add(user)
     await db.commit()
@@ -34,9 +34,9 @@ async def register_user(
 async def authenticate_user(db: AsyncSession, *, email: str, password: str) -> User:
     user = await db.scalar(select(User).where(User.email == email))
     if user is None or not verify_password(password, user.hashed_password):
-        raise AuthenticationError("Niepoprawny e-mail lub hasło.")
+        raise AuthenticationError("Incorrect email or password.")
     if not user.is_active:
-        raise AuthenticationError("Konto jest nieaktywne.")
+        raise AuthenticationError("Account is inactive.")
     return user
 
 
@@ -72,6 +72,6 @@ async def list_api_keys(db: AsyncSession, *, user: User) -> list[ApiKey]:
 async def revoke_api_key(db: AsyncSession, *, user: User, key_id: uuid.UUID) -> None:
     api_key = await db.get(ApiKey, key_id)
     if api_key is None or api_key.user_id != user.id:
-        raise NotFoundError("Klucz API nie istnieje.")
+        raise NotFoundError("API key not found.")
     await db.delete(api_key)
     await db.commit()

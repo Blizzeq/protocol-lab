@@ -1,4 +1,4 @@
-"""Schematy Pydantic dla komentarzy."""
+"""Pydantic schemas for comments."""
 
 from __future__ import annotations
 

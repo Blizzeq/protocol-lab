@@ -1,4 +1,4 @@
-"""Typy GraphQL (Strawberry) + resolvery relacji przez DataLoadery."""
+"""GraphQL types (Strawberry) + relation resolvers via DataLoaders."""
 
 from __future__ import annotations
 

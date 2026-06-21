@@ -1,4 +1,4 @@
-"""Serwis zadań (tasks) — logika + autoryzacja przez właściciela tablicy."""
+"""Task service — logic + authorization via the board owner."""
 
 from __future__ import annotations
 
@@ -32,10 +32,10 @@ async def get_owned_task(
 ) -> Task:
     task = await db.get(Task, task_id)
     if task is None:
-        raise NotFoundError("Zadanie nie istnieje.")
+        raise NotFoundError("Task not found.")
     board = await db.get(Board, task.board_id)
     if board is None or board.owner_id != owner_id:
-        raise PermissionDeniedError("Brak dostępu do tego zadania.")
+        raise PermissionDeniedError("You do not have access to this task.")
     return task
 
 

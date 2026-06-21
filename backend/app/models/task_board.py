@@ -1,8 +1,8 @@
-"""Modele ORM domeny "tablica zadań" — odwzorowanie schematu `protocol_lab`.
+"""ORM models for the "task board" domain — mapping of the `protocol_lab` schema.
 
-To jest warstwa danych współdzielona przez WSZYSTKIE paradygmaty (REST, GraphQL, MCP...).
-Tabele zostały utworzone migracją Supabase (`protocol_lab_init`); te modele tylko je
-odwzorowują (nie wołamy `create_all`).
+This is the data layer shared by ALL paradigms (REST, GraphQL, MCP...).
+The tables were created by a Supabase migration (`protocol_lab_init`); these models only
+map them (we do not call `create_all`).
 """
 
 from __future__ import annotations
@@ -41,7 +41,7 @@ class TaskPriority(enum.StrEnum):
 
 
 def _pg_enum(py_enum: type[enum.Enum], name: str) -> Enum:
-    # create_type=False — typ już istnieje w bazie (utworzony migracją)
+    # create_type=False — the type already exists in the database (created by a migration)
     return Enum(
         py_enum,
         name=name,
@@ -51,7 +51,7 @@ def _pg_enum(py_enum: type[enum.Enum], name: str) -> Enum:
     )
 
 
-# Tabela łącznikowa many-to-many: zadania <-> tagi
+# Many-to-many join table: tasks <-> tags
 task_tags = Table(
     "task_tags",
     Base.metadata,

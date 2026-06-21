@@ -1,4 +1,4 @@
-"""Serwis komentarzy — autoryzacja przez właściciela tablicy zadania."""
+"""Comment service — authorization via the owner of the task's board."""
 
 from __future__ import annotations
 
@@ -30,11 +30,11 @@ async def get_owned_comment(
 ) -> Comment:
     comment = await db.get(Comment, comment_id)
     if comment is None:
-        raise NotFoundError("Komentarz nie istnieje.")
+        raise NotFoundError("Comment not found.")
     task = await db.get(Task, comment.task_id)
     board = await db.get(Board, task.board_id) if task else None
     if board is None or board.owner_id != owner_id:
-        raise PermissionDeniedError("Brak dostępu do tego komentarza.")
+        raise PermissionDeniedError("You do not have access to this comment.")
     return comment
 
 

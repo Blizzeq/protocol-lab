@@ -1,4 +1,4 @@
-"""Bezpieczeństwo: hashowanie haseł, tokeny JWT, klucze API."""
+"""Security: password hashing, JWT tokens, API keys."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from pwdlib.hashers.bcrypt import BcryptHasher
 
 from app.core.config import get_settings
 
-# Jawnie bcrypt (zainstalowane przez pwdlib[bcrypt]); recommended() chciałby argon2.
+# Explicitly bcrypt (installed via pwdlib[bcrypt]); recommended() would want argon2.
 _pwd = PasswordHash((BcryptHasher(),))
 
 
@@ -36,7 +36,7 @@ def create_access_token(subject: str) -> str:
 
 
 def decode_access_token(token: str) -> str | None:
-    """Zwraca `sub` (id użytkownika) lub None gdy token niepoprawny/wygasły."""
+    """Returns `sub` (user id) or None when the token is invalid/expired."""
     settings = get_settings()
     try:
         payload = jwt.decode(
@@ -47,14 +47,14 @@ def decode_access_token(token: str) -> str | None:
     return payload.get("sub")
 
 
-# --- Klucze API ---
+# --- API keys ---
 API_KEY_PREFIX = "pl_"
 
 
 def generate_api_key() -> tuple[str, str, str]:
-    """Zwraca (pełny_klucz, prefix_do_wyświetlenia, hash_do_zapisu).
+    """Returns (full_key, prefix_for_display, hash_to_store).
 
-    Pełny klucz pokazujemy użytkownikowi tylko raz; w bazie trzymamy wyłącznie hash.
+    We show the full key to the user only once; in the database we keep only the hash.
     """
     full = f"{API_KEY_PREFIX}{secrets.token_urlsafe(32)}"
     return full, full[:10], hash_api_key(full)

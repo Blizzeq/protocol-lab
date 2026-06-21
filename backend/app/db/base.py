@@ -1,7 +1,7 @@
-"""Deklaratywna baza ORM + metadata związana ze schematem `protocol_lab`.
+"""Declarative ORM base + metadata bound to the `protocol_lab` schema.
 
-Wszystkie modele dziedziczą po ``Base`` i są automatycznie kwalifikowane schematem,
-więc współistnieją z innymi projektami w tym samym projekcie Supabase.
+All models inherit from ``Base`` and are automatically schema-qualified,
+so they coexist with other projects in the same Supabase project.
 """
 
 from sqlalchemy import MetaData
@@ -9,7 +9,7 @@ from sqlalchemy.orm import DeclarativeBase
 
 SCHEMA = "protocol_lab"
 
-# Spójne, czytelne nazwy constraintów/indeksów (przydatne przy migracjach).
+# Consistent, readable constraint/index names (useful during migrations).
 NAMING_CONVENTION = {
     "ix": "%(column_0_label)s_idx",
     "uq": "uq_%(table_name)s_%(column_0_name)s",

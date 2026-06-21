@@ -1,6 +1,6 @@
-"""Schemat GraphQL — Query / Mutation / Subscription.
+"""GraphQL schema — Query / Mutation / Subscription.
 
-Resolvery wołają tę samą warstwę `services/` co REST → identyczne dane i autoryzacja.
+Resolvers call the same `services/` layer as REST → identical data and authorization.
 """
 
 from __future__ import annotations
@@ -106,9 +106,9 @@ class Mutation:
 class Subscription:
     @strawberry.subscription
     async def count(self, target: int = 5) -> AsyncGenerator[int]:
-        """Demo subskrypcji (po WebSocket): emituje 0..target-1 co sekundę.
+        """Subscription demo (over WebSocket): emits 0..target-1 every second.
 
-        Pełny pub/sub na zdarzeniach domenowych dojdzie w M3 (real-time).
+        Full pub/sub on domain events will arrive in M3 (real-time).
         """
         for i in range(target):
             yield i

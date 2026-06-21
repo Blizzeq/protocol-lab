@@ -1,4 +1,4 @@
-"""Router komentarzy: zagnieżdżone pod zadaniem."""
+"""Comments router: nested under a task."""
 
 from __future__ import annotations
 

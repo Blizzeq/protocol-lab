@@ -1,4 +1,4 @@
-"""Router auth: rejestracja, logowanie (OAuth2), profil, klucze API."""
+"""Auth router: registration, login (OAuth2), profile, API keys."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Spójna obsługa błędów w formacie RFC 9457 (application/problem+json)."""
+"""Consistent error handling in RFC 9457 format (application/problem+json)."""
 
 from __future__ import annotations
 
@@ -44,7 +44,7 @@ def _problem(
     )
 
 
-# (typ wyjątku domenowego, kod HTTP, tytuł)
+# (domain exception type, HTTP code, title)
 _DOMAIN_MAP: list[tuple[type[ServiceError], int, str]] = [
     (NotFoundError, 404, "Not Found"),
     (ConflictError, 409, "Conflict"),
@@ -69,7 +69,7 @@ def register_error_handlers(app: FastAPI) -> None:
         return _problem(
             422,
             "Validation Error",
-            detail="Żądanie nie przeszło walidacji.",
+            detail="The request failed validation.",
             instance=request.url.path,
             errors=jsonable_encoder(exc.errors()),
         )
@@ -79,7 +79,7 @@ def register_error_handlers(app: FastAPI) -> None:
         return _problem(
             429,
             "Too Many Requests",
-            detail=f"Przekroczono limit żądań ({exc.detail}).",
+            detail=f"Too many requests ({exc.detail}).",
             instance=request.url.path,
         )
 

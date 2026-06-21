@@ -1,7 +1,7 @@
-"""Smoke test — potwierdza, że aplikacja wstaje i /health odpowiada.
+"""Smoke test — confirms the application starts and /health responds.
 
-Używa httpx.AsyncClient + ASGITransport (zalecane dla async FastAPI; TestClient
-synchroniczny potrafi blokować event loop).
+Uses httpx.AsyncClient + ASGITransport (recommended for async FastAPI; the
+synchronous TestClient can block the event loop).
 """
 
 import httpx

@@ -1,10 +1,10 @@
-"""Wspólne schematy odpowiedzi."""
+"""Shared response schemas."""
 
 from pydantic import BaseModel
 
 
 class Problem(BaseModel):
-    """Błąd w formacie RFC 9457 (application/problem+json)."""
+    """Error in RFC 9457 format (application/problem+json)."""
 
     type: str = "about:blank"
     title: str

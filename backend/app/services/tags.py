@@ -1,4 +1,4 @@
-"""Serwis tagów + relacji zadanie-tag (many-to-many)."""
+"""Tag service + task-tag relationship (many-to-many)."""
 
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ async def create_tag(db: AsyncSession, *, board: Board, name: str, color: str) -
         await db.commit()
     except IntegrityError as exc:
         await db.rollback()
-        raise ConflictError("Tag o tej nazwie już istnieje na tej tablicy.") from exc
+        raise ConflictError("A tag with this name already exists on this board.") from exc
     await db.refresh(tag)
     return tag
 
@@ -41,10 +41,10 @@ async def create_tag(db: AsyncSession, *, board: Board, name: str, color: str) -
 async def get_owned_tag(db: AsyncSession, *, owner_id: uuid.UUID, tag_id: uuid.UUID) -> Tag:
     tag = await db.get(Tag, tag_id)
     if tag is None:
-        raise NotFoundError("Tag nie istnieje.")
+        raise NotFoundError("Tag not found.")
     board = await db.get(Board, tag.board_id)
     if board is None or board.owner_id != owner_id:
-        raise PermissionDeniedError("Brak dostępu do tego tagu.")
+        raise PermissionDeniedError("You do not have access to this tag.")
     return tag
 
 
@@ -55,8 +55,8 @@ async def delete_tag(db: AsyncSession, *, tag: Tag) -> None:
 
 async def attach_tag(db: AsyncSession, *, task: Task, tag: Tag) -> None:
     if tag.board_id != task.board_id:
-        raise ConflictError("Tag należy do innej tablicy niż zadanie.")
-    # ON CONFLICT DO NOTHING — operacja idempotentna, bez ładowania relacji (async-safe)
+        raise ConflictError("The tag belongs to a different board than the task.")
+    # ON CONFLICT DO NOTHING — idempotent operation, no relationship loading (async-safe)
     await db.execute(
         pg_insert(task_tags).values(task_id=task.id, tag_id=tag.id).on_conflict_do_nothing()
     )

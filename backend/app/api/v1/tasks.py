@@ -1,4 +1,4 @@
-"""Router pojedynczych zadań (get/update/delete po id)."""
+"""Router for individual tasks (get/update/delete by id)."""
 
 from __future__ import annotations
 

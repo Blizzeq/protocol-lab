@@ -1,4 +1,4 @@
-"""Schematy Pydantic: użytkownicy, tokeny, klucze API."""
+"""Pydantic schemas: users, tokens, API keys."""
 
 from __future__ import annotations
 
@@ -44,5 +44,5 @@ class ApiKeyRead(BaseModel):
 
 
 class ApiKeyCreated(ApiKeyRead):
-    # Pełny klucz — zwracany TYLKO przy tworzeniu, nigdy później.
+    # Full key — returned ONLY at creation time, never afterwards.
     api_key: str

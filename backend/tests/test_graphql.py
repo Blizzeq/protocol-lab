@@ -1,4 +1,4 @@
-"""Testy integracyjne GraphQL — ta sama warstwa services/ co REST."""
+"""GraphQL integration tests — the same services/ layer as REST."""
 
 import httpx
 import pytest
@@ -7,7 +7,7 @@ from app.core.config import get_settings
 
 pytestmark = pytest.mark.skipif(
     get_settings().database_url is None,
-    reason="DATABASE_URL nie skonfigurowane (np. CI bez sekretów)",
+    reason="DATABASE_URL not configured (e.g. CI without secrets)",
 )
 
 
@@ -40,7 +40,7 @@ async def test_graphql_mutations_and_nested_query(client, register):
     assert data["data"]["createTask"]["status"] == "todo"
     assert data["data"]["createTask"]["priority"] == "medium"
 
-    # zagnieżdżone pole tasks rozwiązywane przez DataLoader
+    # nested tasks field resolved by DataLoader
     data = await _gql(client, "{ boards { id tasks { id title } } }", headers=h)
     boards = data["data"]["boards"]
     assert any(b["id"] == bid and len(b["tasks"]) == 1 for b in boards)
@@ -49,4 +49,4 @@ async def test_graphql_mutations_and_nested_query(client, register):
 async def test_graphql_requires_auth(client):
     data = await _gql(client, "{ boards { id } }")
     assert data["data"] is None
-    assert data["errors"][0]["message"].startswith("Wymagane uwierzytelnienie")
+    assert data["errors"][0]["message"].startswith("Authentication required")

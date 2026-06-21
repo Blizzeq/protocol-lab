@@ -1,8 +1,8 @@
-"""Punkt wejścia FastAPI — celowo cienki.
+"""FastAPI entry point — intentionally thin.
 
-Tworzy aplikację, podpina middleware i routery. Logika domenowa żyje w
-``app/services`` i jest współdzielona przez WSZYSTKIE paradygmaty (REST, GraphQL,
-MCP, Connect) — to filar architektury projektu.
+Creates the application, wires up middleware and routers. Domain logic lives in
+``app/services`` and is shared across ALL paradigms (REST, GraphQL,
+MCP, Connect) — this is the cornerstone of the project's architecture.
 """
 
 from fastapi import FastAPI
@@ -25,8 +25,8 @@ app = FastAPI(
     title="Protocol Lab API",
     version="0.1.0",
     description=(
-        "Jeden zbiór danych udostępniony przez wszystkie nowoczesne paradygmaty "
-        "wymiany informacji: REST, GraphQL, gRPC/Connect, WebSocket, SSE, webhooki i MCP."
+        "One dataset exposed through every modern information-exchange paradigm: "
+        "REST, GraphQL, gRPC/Connect, WebSocket, SSE, webhooks, and MCP."
     ),
 )
 
@@ -38,7 +38,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Rate limiting (slowapi) — limiter w app.state + middleware stosujące limity domyślne
+# Rate limiting (slowapi) — limiter in app.state + middleware applying default limits
 app.state.limiter = limiter
 app.add_middleware(SlowAPIMiddleware)
 
@@ -46,7 +46,7 @@ register_error_handlers(app)
 app.include_router(api_router)
 add_pagination(app)
 
-# GraphQL (Strawberry) — nad tą samą warstwą services/ co REST
+# GraphQL (Strawberry) — over the same services/ layer as REST
 graphql_router = GraphQLRouter(
     graphql_schema,
     context_getter=get_context,
@@ -58,5 +58,5 @@ app.include_router(graphql_router, prefix="/graphql")
 
 @app.get("/health", tags=["meta"], summary="Health check")
 async def health() -> dict[str, str]:
-    """Prosty endpoint zdrowia — używany przez load balancery i smoke testy."""
+    """Simple health endpoint — used by load balancers and smoke tests."""
     return {"status": "ok", "service": "protocol-lab", "version": app.version}

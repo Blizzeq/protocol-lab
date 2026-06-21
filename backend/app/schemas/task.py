@@ -1,4 +1,4 @@
-"""Schematy Pydantic dla zadań (tasks)."""
+"""Pydantic schemas for tasks."""
 
 from __future__ import annotations
 

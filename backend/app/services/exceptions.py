@@ -1,7 +1,7 @@
-"""Wyjątki domenowe — niezależne od HTTP.
+"""Domain exceptions — independent of HTTP.
 
-Mapowane na odpowiedzi RFC 9457 w `app/core/errors.py`. Dzięki temu warstwa
-serwisowa nie wie nic o HTTP i może być reużyta przez GraphQL/MCP.
+Mapped to RFC 9457 responses in `app/core/errors.py`. This way the service
+layer knows nothing about HTTP and can be reused by GraphQL/MCP.
 """
 
 from __future__ import annotations
@@ -14,16 +14,16 @@ class ServiceError(Exception):
 
 
 class NotFoundError(ServiceError):
-    """Zasób nie istnieje → 404."""
+    """Resource does not exist → 404."""
 
 
 class ConflictError(ServiceError):
-    """Konflikt stanu (np. duplikat) → 409."""
+    """State conflict (e.g. duplicate) → 409."""
 
 
 class PermissionDeniedError(ServiceError):
-    """Brak uprawnień do zasobu → 403."""
+    """No permission to access the resource → 403."""
 
 
 class AuthenticationError(ServiceError):
-    """Brak/niepoprawne uwierzytelnienie → 401."""
+    """Missing/invalid authentication → 401."""

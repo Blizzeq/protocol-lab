@@ -1,4 +1,4 @@
-"""Wspólne fixture dla testów integracyjnych (REST + GraphQL)."""
+"""Shared fixtures for integration tests (REST + GraphQL)."""
 
 import uuid
 
@@ -15,7 +15,7 @@ PASSWORD = "supersecret123"
 
 @pytest.fixture
 async def cleanup_emails():
-    """Zbiera e-maile utworzonych userów i usuwa ich po teście (kaskada czyści resztę)."""
+    """Collects emails of created users and deletes them after the test (cascade clears rest)."""
     emails: list[str] = []
     yield emails
     sm = get_sessionmaker()
@@ -37,7 +37,7 @@ async def client():
 
 @pytest.fixture
 def register(client, cleanup_emails):
-    """Zwraca async-fabrykę: rejestruje nowego usera i zwraca nagłówek Authorization."""
+    """Returns an async factory: registers a new user and returns the Authorization header."""
 
     async def _register() -> dict[str, str]:
         email = f"pytest_{uuid.uuid4().hex[:10]}@protocollab.io"

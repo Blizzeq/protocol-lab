@@ -1,7 +1,7 @@
 import { ApiReference } from "@scalar/nextjs-api-reference";
 
-// Interaktywna dokumentacja REST (Scalar) celująca w /openapi.json backendu.
-// W dev domyślnie http://localhost:8000; na produkcji ustaw NEXT_PUBLIC_API_URL.
+// Interactive REST documentation (Scalar) pointing at the backend's /openapi.json.
+// In dev defaults to http://localhost:8000; in production set NEXT_PUBLIC_API_URL.
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export const GET = ApiReference({

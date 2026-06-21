@@ -1,4 +1,4 @@
-"""Centralna konfiguracja aplikacji (12-factor: wszystko z env)."""
+"""Central application configuration (12-factor: everything from env)."""
 
 from functools import lru_cache
 
@@ -11,20 +11,20 @@ class Settings(BaseSettings):
     app_name: str = "Protocol Lab"
     environment: str = "development"
 
-    # Infrastruktura — dopinane w kolejnych milestone'ach
+    # Infrastructure — wired up in subsequent milestones
     database_url: str | None = None
     redis_url: str | None = None
 
-    # Logowanie zapytań SQL (głośne — domyślnie off, włącz do debugowania)
+    # SQL query logging (noisy — off by default, enable for debugging)
     db_echo: bool = False
 
     # Auth / JWT
-    # Min. 32 bajty dla HS256. To wartość DEV — w produkcji ustaw przez env.
+    # Min. 32 bytes for HS256. This is a DEV value — in production set it via env.
     jwt_secret: str = "dev-only-insecure-jwt-secret-change-me-in-production"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
 
-    # CORS — originy frontendu (Next.js). Lista po przecinku w env.
+    # CORS — frontend origins (Next.js). Comma-separated list in env.
     cors_origins: str = "http://localhost:3000"
 
     @property

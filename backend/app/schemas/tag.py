@@ -1,4 +1,4 @@
-"""Schematy Pydantic dla tagów."""
+"""Pydantic schemas for tags."""
 
 from __future__ import annotations
 

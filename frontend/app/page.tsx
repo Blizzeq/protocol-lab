@@ -1,6 +1,8 @@
+import Link from "next/link";
+
 const PARADIGMS = [
   { slug: "rest", name: "REST", blurb: "Fundament — CRUD po HTTP, OpenAPI, paginacja, auth", status: "✓ M1" },
-  { slug: "graphql", name: "GraphQL", blurb: "Klient wybiera dokładnie te pola, których chce", status: "M2" },
+  { slug: "graphql", name: "GraphQL", blurb: "Klient wybiera dokładnie te pola, których chce", status: "✓ M2" },
   { slug: "realtime", name: "WebSocket + SSE", blurb: "Dane w czasie rzeczywistym — serwer wypycha zmiany", status: "M3" },
   { slug: "webhooks", name: "Webhooki", blurb: "Zdarzenia zamiast odpytywania, z podpisem HMAC", status: "M4" },
   { slug: "grpc", name: "gRPC / Connect", blurb: "Typowany kontrakt (protobuf), wywołanie z przeglądarki", status: "M5" },
@@ -16,10 +18,13 @@ export default function Home() {
         nowoczesne paradygmaty wymiany informacji. Projekt portfolio.
       </p>
 
-      <p className="mt-4 flex gap-4 text-sm">
+      <p className="mt-4 flex flex-wrap gap-4 text-sm">
         <a className="font-medium text-blue-600 underline dark:text-blue-400" href="/reference">
-          → Interaktywna dokumentacja REST (Scalar)
+          → Dokumentacja REST (Scalar)
         </a>
+        <Link className="font-medium text-blue-600 underline dark:text-blue-400" href="/rest-vs-graphql">
+          → Demo: REST vs GraphQL
+        </Link>
       </p>
 
       <ul className="mt-10 grid gap-4 sm:grid-cols-2">

@@ -8,6 +8,7 @@ from sqlalchemy import Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.task_board import Board
+from app.realtime.events import emit
 from app.schemas.board import BoardCreate, BoardUpdate
 from app.services.exceptions import NotFoundError, PermissionDeniedError
 
@@ -22,6 +23,9 @@ async def create_board(db: AsyncSession, *, owner_id: uuid.UUID, data: BoardCrea
     db.add(board)
     await db.commit()
     await db.refresh(board)
+    await emit(
+        "board.created", board_id=board.id, payload={"id": str(board.id), "name": board.name}
+    )
     return board
 
 

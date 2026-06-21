@@ -8,8 +8,13 @@ from sqlalchemy import Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.task_board import Board, Task, TaskStatus
+from app.realtime.events import emit
 from app.schemas.task import TaskCreate, TaskUpdate
 from app.services.exceptions import NotFoundError, PermissionDeniedError
+
+
+def _task_payload(task: Task) -> dict:
+    return {"id": str(task.id), "title": task.title, "status": task.status.value}
 
 
 def tasks_query(board_id: uuid.UUID, status: TaskStatus | None = None) -> Select:
@@ -24,6 +29,7 @@ async def create_task(db: AsyncSession, *, board: Board, data: TaskCreate) -> Ta
     db.add(task)
     await db.commit()
     await db.refresh(task)
+    await emit("task.created", board_id=task.board_id, payload=_task_payload(task))
     return task
 
 
@@ -44,9 +50,13 @@ async def update_task(db: AsyncSession, *, task: Task, data: TaskUpdate) -> Task
         setattr(task, field, value)
     await db.commit()
     await db.refresh(task)
+    await emit("task.updated", board_id=task.board_id, payload=_task_payload(task))
     return task
 
 
 async def delete_task(db: AsyncSession, *, task: Task) -> None:
+    payload = {"id": str(task.id)}
+    board_id = task.board_id
     await db.delete(task)
     await db.commit()
+    await emit("task.deleted", board_id=board_id, payload=payload)

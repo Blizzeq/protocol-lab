@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import ApiKeyMaker from "../components/ApiKeyMaker";
+
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 const TOOLS = [
@@ -22,6 +24,15 @@ export default function McpPage() {
         the <code>MCP_API_KEY</code> environment variable).
       </p>
 
+      <h2 className="mt-8 font-semibold">Step 1 · Get an API key</h2>
+      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+        The MCP server acts as one user. Sign in and create an API key — you&apos;ll paste it as{" "}
+        <code>MCP_API_KEY</code> below.
+      </p>
+      <div className="mt-2">
+        <ApiKeyMaker />
+      </div>
+
       <h2 className="mt-8 font-semibold">Tools the model sees</h2>
       <ul className="mt-2 space-y-1 text-sm">
         {TOOLS.map((t) => (
@@ -32,7 +43,7 @@ export default function McpPage() {
         ))}
       </ul>
 
-      <h2 className="mt-8 font-semibold">Connect (remote, Streamable HTTP)</h2>
+      <h2 className="mt-8 font-semibold">Step 2 · Connect (remote, Streamable HTTP)</h2>
       <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">Claude Code:</p>
       <pre className="mt-1 overflow-auto rounded border border-gray-200 p-3 text-xs dark:border-gray-800">
 {`claude mcp add --transport http protocol-lab ${API}/mcp`}

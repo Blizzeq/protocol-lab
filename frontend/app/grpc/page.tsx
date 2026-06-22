@@ -44,9 +44,16 @@ export default function GrpcPage() {
       <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
         A typed Protobuf contract, generated into a Python server and a TypeScript client by{" "}
         <code>buf</code>. The browser calls it directly over the Connect protocol — no Envoy or
-        grpc-web proxy. Open DevTools → Network and watch the POST to{" "}
-        <code>/rpc/protocollab.v1.GreetService/Greet</code>.
+        grpc-web proxy. No sign-in needed for this demo.
       </p>
+
+      <ol className="mt-4 list-decimal space-y-1 rounded-lg border border-gray-200 p-4 pl-8 text-sm dark:border-gray-800">
+        <li>Type any name in the box on the right.</li>
+        <li>Click <strong>client.greet()</strong> — the typed client calls the Python server.</li>
+        <li>Open your browser&apos;s DevTools → <strong>Network</strong> tab and look for the POST to{" "}
+          <code>/rpc/protocollab.v1.GreetService/Greet</code> — a readable JSON body proves it is a
+          gRPC-style contract called natively from the browser.</li>
+      </ol>
 
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         <section>

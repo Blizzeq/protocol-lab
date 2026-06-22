@@ -1,12 +1,20 @@
 import Link from "next/link";
 
+import GetStarted from "./components/GetStarted";
+
 const PARADIGMS = [
-  { slug: "rest", name: "REST", blurb: "The foundation — CRUD over HTTP, OpenAPI, pagination, auth", status: "✓ M1" },
-  { slug: "graphql", name: "GraphQL", blurb: "The client picks exactly the fields it wants", status: "✓ M2" },
-  { slug: "realtime", name: "WebSocket + SSE", blurb: "Real-time data — the server pushes changes", status: "✓ M3" },
-  { slug: "webhooks", name: "Webhooks", blurb: "Events instead of polling, with an HMAC signature", status: "✓ M4" },
-  { slug: "grpc", name: "gRPC / Connect", blurb: "Typed contract (protobuf), called from the browser", status: "✓ M5" },
-  { slug: "mcp", name: "MCP", blurb: "Exposing data to AI models (Claude)", status: "✓ M6" },
+  { slug: "rest", href: "/reference", route: false, name: "REST", status: "✓ M1",
+    blurb: "The foundation — CRUD over HTTP, OpenAPI, pagination, auth" },
+  { slug: "graphql", href: "/rest-vs-graphql", route: true, name: "GraphQL", status: "✓ M2",
+    blurb: "The client picks exactly the fields it wants" },
+  { slug: "realtime", href: "/realtime", route: true, name: "WebSocket + SSE", status: "✓ M3",
+    blurb: "Real-time data — the server pushes changes" },
+  { slug: "webhooks", href: "/webhooks", route: true, name: "Webhooks", status: "✓ M4",
+    blurb: "Events instead of polling, with an HMAC signature" },
+  { slug: "grpc", href: "/grpc", route: true, name: "gRPC / Connect", status: "✓ M5",
+    blurb: "Typed contract (protobuf), called from the browser" },
+  { slug: "mcp", href: "/mcp", route: true, name: "MCP", status: "✓ M6",
+    blurb: "Exposing data to AI models (Claude)" },
 ] as const;
 
 export default function Home() {
@@ -14,47 +22,57 @@ export default function Home() {
     <main className="mx-auto max-w-4xl px-6 py-16">
       <h1 className="text-3xl font-bold">Protocol Lab</h1>
       <p className="mt-2 text-gray-600 dark:text-gray-400">
-        One dataset (a collaborative task board) exposed through every modern
-        data-exchange paradigm. A portfolio project.
+        One dataset (a collaborative task board) exposed through every modern data-exchange
+        paradigm. A portfolio project.
       </p>
 
-      <p className="mt-4 flex flex-wrap gap-4 text-sm">
-        <a className="font-medium text-blue-600 underline dark:text-blue-400" href="/reference">
-          → REST documentation (Scalar)
-        </a>
-        <Link className="font-medium text-blue-600 underline dark:text-blue-400" href="/rest-vs-graphql">
-          → Demo: REST vs GraphQL
-        </Link>
-        <Link className="font-medium text-blue-600 underline dark:text-blue-400" href="/realtime">
-          → Live: real-time feed
-        </Link>
-        <Link className="font-medium text-blue-600 underline dark:text-blue-400" href="/webhooks">
-          → Webhooks inspector
-        </Link>
-        <Link className="font-medium text-blue-600 underline dark:text-blue-400" href="/grpc">
-          → gRPC / Connect demo
-        </Link>
-        <Link className="font-medium text-blue-600 underline dark:text-blue-400" href="/mcp">
-          → MCP: connect to Claude
-        </Link>
-      </p>
+      {/* Onboarding */}
+      <section className="mt-8 rounded-lg border border-gray-200 p-5 dark:border-gray-800">
+        <h2 className="font-semibold">Get started in 3 steps</h2>
+        <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-gray-700 dark:text-gray-300">
+          <li>Sign up below (any email + a password of 8+ characters).</li>
+          <li>Click <strong>Create sample data</strong> so the demos have something to show.</li>
+          <li>Open any demo card — each one explains exactly what to do.</li>
+        </ol>
+        <div className="mt-4">
+          <GetStarted />
+        </div>
+      </section>
 
-      <ul className="mt-10 grid gap-4 sm:grid-cols-2">
-        {PARADIGMS.map((p) => (
-          <li key={p.slug} className="rounded-lg border border-gray-200 p-4 dark:border-gray-800">
-            <div className="flex items-center justify-between">
-              <span className="font-semibold">{p.name}</span>
-              <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400">
-                {p.status}
+      {/* Paradigm demos */}
+      <h2 className="mt-10 font-semibold">Explore the six paradigms</h2>
+      <ul className="mt-3 grid gap-4 sm:grid-cols-2">
+        {PARADIGMS.map((p) => {
+          const inner = (
+            <>
+              <div className="flex items-center justify-between">
+                <span className="font-semibold">{p.name}</span>
+                <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                  {p.status}
+                </span>
+              </div>
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{p.blurb}</p>
+              <span className="mt-2 inline-block text-sm font-medium text-blue-600 dark:text-blue-400">
+                Open demo →
               </span>
-            </div>
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{p.blurb}</p>
-          </li>
-        ))}
+            </>
+          );
+          const cls =
+            "block rounded-lg border border-gray-200 p-4 transition-colors hover:border-blue-400 dark:border-gray-800";
+          return (
+            <li key={p.slug}>
+              {p.route ? (
+                <Link href={p.href} className={cls}>{inner}</Link>
+              ) : (
+                <a href={p.href} className={cls}>{inner}</a>
+              )}
+            </li>
+          );
+        })}
       </ul>
 
       <p className="mt-10 text-sm text-gray-500">
-        Scaffold (M0). The look will be polished later with Claude Design (M8).
+        Functional scaffold — the visual design will be polished later with Claude Design.
       </p>
     </main>
   );

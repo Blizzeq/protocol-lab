@@ -24,6 +24,16 @@ def tasks_query(board_id: uuid.UUID, status: TaskStatus | None = None) -> Select
     return stmt.order_by(Task.position, Task.created_at)
 
 
+def search_query(owner_id: uuid.UUID, query: str) -> Select:
+    """Search the owner's tasks by title (case-insensitive)."""
+    return (
+        select(Task)
+        .join(Board, Board.id == Task.board_id)
+        .where(Board.owner_id == owner_id, Task.title.ilike(f"%{query}%"))
+        .order_by(Task.created_at.desc())
+    )
+
+
 async def create_task(db: AsyncSession, *, board: Board, data: TaskCreate) -> Task:
     task = Task(board_id=board.id, **data.model_dump())
     db.add(task)

@@ -11,6 +11,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
+from fastmcp.utilities.lifespan import combine_lifespans
 from slowapi.middleware import SlowAPIMiddleware
 from strawberry.fastapi import GraphQLRouter
 from strawberry.subscriptions import GRAPHQL_TRANSPORT_WS_PROTOCOL, GRAPHQL_WS_PROTOCOL
@@ -21,14 +22,18 @@ from app.core.errors import register_error_handlers
 from app.core.ratelimit import limiter
 from app.graphql.context import get_context
 from app.graphql.schema import schema as graphql_schema
+from app.mcp_server import mcp
 from app.rpc.server import rpc_app
 from app.webhooks.worker import poller
 
 settings = get_settings()
 
+# MCP server as a Streamable HTTP ASGI app (mounted at /mcp below).
+mcp_app = mcp.http_app(path="/")
+
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def app_lifespan(app: FastAPI):
     # Start the webhook delivery poller only when a database is configured.
     task = asyncio.create_task(poller()) if settings.database_url else None
     try:
@@ -45,7 +50,8 @@ app = FastAPI(
         "One dataset exposed through every modern information-exchange paradigm: "
         "REST, GraphQL, gRPC/Connect, WebSocket, SSE, webhooks, and MCP."
     ),
-    lifespan=lifespan,
+    # Combine our poller lifespan with the MCP session-manager lifespan (required).
+    lifespan=combine_lifespans(app_lifespan, mcp_app.lifespan),
 )
 
 app.add_middleware(
@@ -75,6 +81,9 @@ app.include_router(graphql_router, prefix="/graphql")
 
 # gRPC / Connect (connect-python) — mounted ASGI app, browser-callable at /rpc
 app.mount("/rpc", rpc_app)
+
+# MCP server (FastMCP) — remote Streamable HTTP transport at /mcp
+app.mount("/mcp", mcp_app)
 
 
 @app.get("/health", tags=["meta"], summary="Health check")

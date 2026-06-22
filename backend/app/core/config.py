@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     # CORS — frontend origins (Next.js). Comma-separated list in env.
     cors_origins: str = "http://localhost:3000"
 
+    # MCP server acts as this Protocol Lab user (a `pl_` API key). Set via env MCP_API_KEY.
+    mcp_api_key: str | None = None
+
     @property
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

@@ -27,3 +27,6 @@ next-env.d.ts
 # OS / editor
 .DS_Store
 *.log
+
+# Local tooling (preview launch config, etc.)
+.claude/

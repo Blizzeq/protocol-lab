@@ -1,26 +1,91 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Terminal palette — modern dark + neon, but easy on the eyes */
+  --color-ink: #0b0f17; /* page background */
+  --color-panel: #111824; /* cards / panels */
+  --color-panel-2: #0d131d; /* inputs / insets */
+  --color-line: #202c3e; /* borders */
+  --color-fg: #d7e0ee; /* primary text */
+  --color-muted: #8595ab; /* secondary text / placeholders */
+  --color-neon: #4ade80; /* primary accent (green) */
+  --color-cyan: #38bdf8; /* secondary accent */
+  --color-danger: #f87171;
+  --color-warn: #fbbf24;
+
+  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-fg);
+    font-family: var(--font-mono);
+    /* faint dotted grid backdrop for a subtle terminal vibe */
+    background-image: radial-gradient(circle at 1px 1px, rgba(120, 140, 170, 0.06) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+  ::selection {
+    background: var(--color-neon);
+    color: #04130a;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+    border-radius: 6px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2c3c52;
+  }
+  a {
+    color: var(--color-cyan);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .panel {
+    @apply rounded-lg border border-line bg-panel;
+  }
+  .btn {
+    @apply rounded border border-line bg-panel-2 px-3 py-1.5 text-sm text-fg transition-colors
+      hover:border-neon hover:text-neon
+      disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-line disabled:hover:text-fg;
+  }
+  .btn-neon {
+    @apply rounded border border-neon/50 bg-neon/10 px-3 py-1.5 text-sm font-medium text-neon
+      transition-colors hover:bg-neon/20 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .input {
+    @apply w-full rounded border border-line bg-panel-2 px-3 py-1.5 text-sm text-fg
+      placeholder:text-muted focus:border-neon focus:outline-none;
+  }
+  .tlink {
+    @apply text-cyan underline-offset-4 hover:underline;
+  }
+  .tag {
+    @apply rounded border border-line px-2 py-0.5 text-xs text-muted;
+  }
+  /* blinking block cursor, e.g. <span class="cursor" /> */
+  .cursor::after {
+    content: "▮";
+    @apply text-neon;
+    animation: blink 1.1s steps(1) infinite;
+  }
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
 }

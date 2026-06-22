@@ -38,50 +38,42 @@ export default function GrpcPage() {
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-12">
-      <Link href="/" className="text-sm text-blue-600 underline dark:text-blue-400">← Home</Link>
-      <h1 className="mt-3 text-2xl font-bold">gRPC via ConnectRPC</h1>
-      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+    <main className="mx-auto max-w-4xl px-4 py-10">
+      <Link href="/" className="text-sm text-muted hover:text-fg">$ cd ..</Link>
+      <h1 className="mt-3 text-2xl font-bold text-fg">$ grpc --via connect</h1>
+      <p className="mt-2 text-sm text-muted">
         A typed Protobuf contract, generated into a Python server and a TypeScript client by{" "}
-        <code>buf</code>. The browser calls it directly over the Connect protocol — no Envoy or
-        grpc-web proxy. No sign-in needed for this demo.
+        <code className="text-cyan">buf</code>. The browser calls it directly over the Connect
+        protocol — no Envoy or grpc-web proxy. No sign-in needed.
       </p>
 
-      <ol className="mt-4 list-decimal space-y-1 rounded-lg border border-gray-200 p-4 pl-8 text-sm dark:border-gray-800">
+      <ol className="panel mt-4 list-decimal space-y-1 p-4 pl-8 text-sm text-fg/90">
         <li>Type any name in the box on the right.</li>
-        <li>Click <strong>client.greet()</strong> — the typed client calls the Python server.</li>
-        <li>Open your browser&apos;s DevTools → <strong>Network</strong> tab and look for the POST to{" "}
-          <code>/rpc/protocollab.v1.GreetService/Greet</code> — a readable JSON body proves it is a
-          gRPC-style contract called natively from the browser.</li>
+        <li>Click <span className="text-neon">client.greet()</span> — the typed client calls the Python server.</li>
+        <li>Open DevTools → <strong>Network</strong> and find the POST to{" "}
+          <code className="text-cyan">/rpc/protocollab.v1.GreetService/Greet</code> — a readable JSON body proves
+          it&apos;s a gRPC-style contract called natively from the browser.</li>
       </ol>
 
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         <section>
-          <h2 className="font-semibold">The contract (.proto)</h2>
-          <pre className="mt-2 overflow-auto rounded border border-gray-200 p-3 text-xs dark:border-gray-800">{PROTO}</pre>
+          <h2 className="text-sm font-semibold text-fg">the contract (.proto)</h2>
+          <pre className="mt-2 overflow-auto rounded border border-line bg-panel-2 p-3 text-xs text-fg/90">{PROTO}</pre>
         </section>
 
         <section>
-          <h2 className="font-semibold">Live call</h2>
+          <h2 className="text-sm font-semibold text-fg">live call</h2>
           <div className="mt-2 flex gap-2">
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="flex-1 rounded border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
-            />
-            <button
-              onClick={call}
-              disabled={loading}
-              className="rounded bg-blue-600 px-4 py-2 text-sm text-white disabled:opacity-50"
-            >
+            <input value={name} onChange={(e) => setName(e.target.value)} className="input flex-1" />
+            <button onClick={call} disabled={loading} className="btn-neon">
               {loading ? "Calling…" : "client.greet()"}
             </button>
           </div>
-          {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+          {error && <p className="mt-3 text-sm text-danger">{error}</p>}
           {result && (
-            <div className="mt-3 rounded border border-gray-200 p-3 text-sm dark:border-gray-800">
-              <p>{result.greeting}</p>
-              <p className="mt-1 text-xs text-gray-500">served_by: {result.servedBy}</p>
+            <div className="panel mt-3 p-3 text-sm">
+              <p className="text-fg">{result.greeting}</p>
+              <p className="mt-1 text-xs text-muted">served_by: {result.servedBy}</p>
             </div>
           )}
         </section>

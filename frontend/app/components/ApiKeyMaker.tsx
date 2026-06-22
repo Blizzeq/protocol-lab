@@ -31,18 +31,14 @@ export default function ApiKeyMaker() {
     <div>
       <AuthBar onChange={() => setSignedIn(!!getToken())} />
       {signedIn && (
-        <button
-          onClick={createKey}
-          disabled={busy}
-          className="mt-2 rounded bg-blue-600 px-3 py-1.5 text-sm text-white disabled:opacity-50"
-        >
+        <button onClick={createKey} disabled={busy} className="btn-neon mt-2">
           {busy ? "Creating…" : "Create an API key for MCP"}
         </button>
       )}
       {key && (
-        <p className="mt-2 break-all rounded bg-amber-50 p-2 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-200">
+        <p className="mt-2 break-all rounded border border-warn/40 bg-warn/10 p-2 text-xs text-warn">
           Your API key (shown once) — use it as <code>MCP_API_KEY</code>:{" "}
-          <span className="font-mono">{key}</span>
+          <span className="font-bold">{key}</span>
         </p>
       )}
     </div>

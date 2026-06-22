@@ -30,7 +30,7 @@ export default function GetStarted() {
           body: JSON.stringify({ title }),
         });
       }
-      setMsg('Created board "My first board" with 3 tasks. Now open any demo below.');
+      setMsg('Created board "My first board" with 3 tasks. Now open any module below.');
     } catch (e) {
       setMsg(`Error: ${e}`);
     } finally {
@@ -43,14 +43,10 @@ export default function GetStarted() {
       <AuthBar onChange={() => setSignedIn(!!getToken())} />
       {signedIn && (
         <div className="mt-2">
-          <button
-            onClick={createSample}
-            disabled={busy}
-            className="rounded bg-green-600 px-3 py-1.5 text-sm text-white disabled:opacity-50"
-          >
+          <button onClick={createSample} disabled={busy} className="btn-neon">
             {busy ? "Creating…" : "Create sample data"}
           </button>
-          {msg && <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">{msg}</p>}
+          {msg && <p className="mt-1 text-xs text-muted">{msg}</p>}
         </div>
       )}
     </div>

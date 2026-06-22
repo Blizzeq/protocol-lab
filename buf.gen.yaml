@@ -1,0 +1,14 @@
+version: v2
+plugins:
+  # --- Python (backend): messages + stubs + Connect service ---
+  - remote: buf.build/protocolbuffers/python
+    out: backend/app/rpc/gen
+  - remote: buf.build/protocolbuffers/pyi
+    out: backend/app/rpc/gen
+  - remote: buf.build/connectrpc/python
+    out: backend/app/rpc/gen
+  # --- TypeScript (frontend): messages + service (connect-es v2 uses protoc-gen-es alone) ---
+  - remote: buf.build/bufbuild/es
+    out: frontend/app/grpc/gen
+    opt:
+      - target=ts

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package protocollab.v1;
+
+message GreetRequest {
+  string name = 1;
+}
+
+message GreetResponse {
+  string greeting = 1;
+  string served_by = 2;
+}
+
+service GreetService {
+  // Unary RPC — typed contract, callable from the browser over the Connect protocol.
+  rpc Greet(GreetRequest) returns (GreetResponse) {}
+}

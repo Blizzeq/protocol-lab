@@ -5,7 +5,7 @@ const PARADIGMS = [
   { slug: "graphql", name: "GraphQL", blurb: "The client picks exactly the fields it wants", status: "✓ M2" },
   { slug: "realtime", name: "WebSocket + SSE", blurb: "Real-time data — the server pushes changes", status: "✓ M3" },
   { slug: "webhooks", name: "Webhooks", blurb: "Events instead of polling, with an HMAC signature", status: "✓ M4" },
-  { slug: "grpc", name: "gRPC / Connect", blurb: "Typed contract (protobuf), called from the browser", status: "M5" },
+  { slug: "grpc", name: "gRPC / Connect", blurb: "Typed contract (protobuf), called from the browser", status: "✓ M5" },
   { slug: "mcp", name: "MCP", blurb: "Exposing data to AI models (Claude)", status: "M6" },
 ] as const;
 
@@ -30,6 +30,9 @@ export default function Home() {
         </Link>
         <Link className="font-medium text-blue-600 underline dark:text-blue-400" href="/webhooks">
           → Webhooks inspector
+        </Link>
+        <Link className="font-medium text-blue-600 underline dark:text-blue-400" href="/grpc">
+          → gRPC / Connect demo
         </Link>
       </p>
 

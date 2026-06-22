@@ -21,6 +21,7 @@ from app.core.errors import register_error_handlers
 from app.core.ratelimit import limiter
 from app.graphql.context import get_context
 from app.graphql.schema import schema as graphql_schema
+from app.rpc.server import rpc_app
 from app.webhooks.worker import poller
 
 settings = get_settings()
@@ -71,6 +72,9 @@ graphql_router = GraphQLRouter(
     subscription_protocols=[GRAPHQL_TRANSPORT_WS_PROTOCOL, GRAPHQL_WS_PROTOCOL],
 )
 app.include_router(graphql_router, prefix="/graphql")
+
+# gRPC / Connect (connect-python) — mounted ASGI app, browser-callable at /rpc
+app.mount("/rpc", rpc_app)
 
 
 @app.get("/health", tags=["meta"], summary="Health check")

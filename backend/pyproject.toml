@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "asyncpg>=0.31.0",
+    "connectrpc>=0.10.1",
     "email-validator>=2.3.0",
     "fastapi>=0.138.0",
     "fastapi-pagination>=0.15.15",
@@ -26,6 +27,7 @@ package = false
 [tool.ruff]
 line-length = 100
 target-version = "py314"
+extend-exclude = ["app/rpc/gen"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "ASYNC"]

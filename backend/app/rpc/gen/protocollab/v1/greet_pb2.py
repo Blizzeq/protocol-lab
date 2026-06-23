@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1aprotocollab/v1/greet.proto\x12\x0eprotocollab.v1\"\"\n\x0cGreetRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"H\n\rGreetResponse\x12\x1a\n\x08greeting\x18\x01 \x01(\tR\x08greeting\x12\x1b\n\tserved_by\x18\x02 \x01(\tR\x08servedBy2V\n\x0cGreetService\x12\x46\n\x05Greet\x12\x1c.protocollab.v1.GreetRequest\x1a\x1d.protocollab.v1.GreetResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1aprotocollab/v1/greet.proto\x12\x0eprotocollab.v1\"\"\n\x0cGreetRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"H\n\rGreetResponse\x12\x1a\n\x08greeting\x18\x01 \x01(\tR\x08greeting\x12\x1b\n\tserved_by\x18\x02 \x01(\tR\x08servedBy\".\n\x11\x42oardStatsRequest\x12\x19\n\x08\x62oard_id\x18\x01 \x01(\tR\x07\x62oardId\"\x8d\x01\n\x12\x42oardStatsResponse\x12\x14\n\x05total\x18\x01 \x01(\x05R\x05total\x12\x12\n\x04todo\x18\x02 \x01(\x05R\x04todo\x12\x1f\n\x0bin_progress\x18\x03 \x01(\x05R\ninProgress\x12\x12\n\x04\x64one\x18\x04 \x01(\x05R\x04\x64one\x12\x18\n\x07members\x18\x05 \x01(\x05R\x07members\")\n\x0cWatchRequest\x12\x19\n\x08\x62oard_id\x18\x01 \x01(\tR\x07\x62oardId\"K\n\nBoardEvent\x12\x10\n\x03seq\x18\x01 \x01(\x03R\x03seq\x12\x12\n\x04type\x18\x02 \x01(\tR\x04type\x12\x17\n\x07task_id\x18\x03 \x01(\tR\x06taskId2V\n\x0cGreetService\x12\x46\n\x05Greet\x12\x1c.protocollab.v1.GreetRequest\x1a\x1d.protocollab.v1.GreetResponse\"\x00\x32\xb4\x01\n\x0c\x42oardService\x12X\n\rGetBoardStats\x12!.protocollab.v1.BoardStatsRequest\x1a\".protocollab.v1.BoardStatsResponse\"\x00\x12J\n\nWatchBoard\x12\x1c.protocollab.v1.WatchRequest\x1a\x1a.protocollab.v1.BoardEvent\"\x00\x30\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -35,6 +35,16 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_GREETREQUEST']._serialized_end=80
   _globals['_GREETRESPONSE']._serialized_start=82
   _globals['_GREETRESPONSE']._serialized_end=154
-  _globals['_GREETSERVICE']._serialized_start=156
-  _globals['_GREETSERVICE']._serialized_end=242
+  _globals['_BOARDSTATSREQUEST']._serialized_start=156
+  _globals['_BOARDSTATSREQUEST']._serialized_end=202
+  _globals['_BOARDSTATSRESPONSE']._serialized_start=205
+  _globals['_BOARDSTATSRESPONSE']._serialized_end=346
+  _globals['_WATCHREQUEST']._serialized_start=348
+  _globals['_WATCHREQUEST']._serialized_end=389
+  _globals['_BOARDEVENT']._serialized_start=391
+  _globals['_BOARDEVENT']._serialized_end=466
+  _globals['_GREETSERVICE']._serialized_start=468
+  _globals['_GREETSERVICE']._serialized_end=554
+  _globals['_BOARDSERVICE']._serialized_start=557
+  _globals['_BOARDSERVICE']._serialized_end=737
 # @@protoc_insertion_point(module_scope)

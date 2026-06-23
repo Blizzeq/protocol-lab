@@ -6,8 +6,10 @@
   --color-panel: #111824; /* cards / panels */
   --color-panel-2: #0d131d; /* inputs / insets */
   --color-line: #202c3e; /* borders */
+  --color-line-2: #14202f; /* faint inner dividers / chart grid */
   --color-fg: #d7e0ee; /* primary text */
   --color-muted: #8595ab; /* secondary text / placeholders */
+  --color-faint: #3f4d63; /* tertiary text / captions / idle */
   --color-neon: #4ade80; /* primary accent (green) */
   --color-cyan: #38bdf8; /* secondary accent */
   --color-danger: #f87171;
@@ -25,7 +27,7 @@
     color: var(--color-fg);
     font-family: var(--font-mono);
     /* faint dotted grid backdrop for a subtle terminal vibe */
-    background-image: radial-gradient(circle at 1px 1px, rgba(120, 140, 170, 0.06) 1px, transparent 0);
+    background-image: radial-gradient(#1a2436 1px, transparent 1px);
     background-size: 22px 22px;
   }
   ::selection {
@@ -36,9 +38,13 @@
     width: 10px;
     height: 10px;
   }
+  ::-webkit-scrollbar-track {
+    background: var(--color-ink);
+  }
   ::-webkit-scrollbar-thumb {
     background: var(--color-line);
     border-radius: 6px;
+    border: 2px solid var(--color-ink);
   }
   ::-webkit-scrollbar-thumb:hover {
     background: #2c3c52;
@@ -79,6 +85,7 @@
   }
 }
 
+/* ── Terminal/lifecycle animations (used by the redesigned demo pages) ────── */
 @keyframes blink {
   0%,
   49% {
@@ -87,5 +94,66 @@
   50%,
   100% {
     opacity: 0;
+  }
+}
+@keyframes pl-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes pl-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  50% {
+    opacity: 0.55;
+    box-shadow: 0 0 0 4px transparent;
+  }
+}
+@keyframes pl-slidein {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pl-stage {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
+  }
+}
+@keyframes pl-flow {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 24px 0;
+  }
+}
+@keyframes pl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes pl-fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

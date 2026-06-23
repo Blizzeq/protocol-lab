@@ -71,6 +71,93 @@ class GreetServiceClient(ConnectClient):
             timeout_ms=timeout_ms,
         )
 
+class BoardService(Protocol):
+    async def get_board_stats(self, request: protocollab_dot_v1_dot_greet__pb2.BoardStatsRequest, ctx: RequestContext) -> protocollab_dot_v1_dot_greet__pb2.BoardStatsResponse:
+        raise ConnectError(Code.UNIMPLEMENTED, "Not implemented")
+
+    def watch_board(self, request: protocollab_dot_v1_dot_greet__pb2.WatchRequest, ctx: RequestContext) -> AsyncIterator[protocollab_dot_v1_dot_greet__pb2.BoardEvent]:
+        raise ConnectError(Code.UNIMPLEMENTED, "Not implemented")
+
+
+class BoardServiceASGIApplication(ConnectASGIApplication[BoardService]):
+    def __init__(self, service: BoardService | AsyncGenerator[BoardService], *, interceptors: Iterable[Interceptor]=(), read_max_bytes: int | None = None, compressions: Iterable[Compression] | None = None, codecs: Iterable[Codec] | None = None) -> None:
+        super().__init__(
+            service=service,
+            endpoints=lambda svc: {
+                "/protocollab.v1.BoardService/GetBoardStats": Endpoint.unary(
+                    method=MethodInfo(
+                        name="GetBoardStats",
+                        service_name="protocollab.v1.BoardService",
+                        input=protocollab_dot_v1_dot_greet__pb2.BoardStatsRequest,
+                        output=protocollab_dot_v1_dot_greet__pb2.BoardStatsResponse,
+                        idempotency_level=IdempotencyLevel.UNKNOWN,
+                    ),
+                    function=svc.get_board_stats,
+                ),
+                "/protocollab.v1.BoardService/WatchBoard": Endpoint.server_stream(
+                    method=MethodInfo(
+                        name="WatchBoard",
+                        service_name="protocollab.v1.BoardService",
+                        input=protocollab_dot_v1_dot_greet__pb2.WatchRequest,
+                        output=protocollab_dot_v1_dot_greet__pb2.BoardEvent,
+                        idempotency_level=IdempotencyLevel.UNKNOWN,
+                    ),
+                    function=svc.watch_board,
+                ),
+            },
+            interceptors=interceptors,
+            read_max_bytes=read_max_bytes,
+            compressions=compressions,
+            codecs=codecs,
+        )
+
+    @property
+    def path(self) -> str:
+        """Returns the URL path to mount the application to when serving multiple applications."""
+        return "/protocollab.v1.BoardService"
+
+
+class BoardServiceClient(ConnectClient):
+    async def get_board_stats(
+        self,
+        request: protocollab_dot_v1_dot_greet__pb2.BoardStatsRequest,
+        *,
+        headers: Headers | Mapping[str, str] | None = None,
+        timeout_ms: int | None = None,
+    ) -> protocollab_dot_v1_dot_greet__pb2.BoardStatsResponse:
+        return await self.execute_unary(
+            request=request,
+            method=MethodInfo(
+                name="GetBoardStats",
+                service_name="protocollab.v1.BoardService",
+                input=protocollab_dot_v1_dot_greet__pb2.BoardStatsRequest,
+                output=protocollab_dot_v1_dot_greet__pb2.BoardStatsResponse,
+                idempotency_level=IdempotencyLevel.UNKNOWN,
+            ),
+            headers=headers,
+            timeout_ms=timeout_ms,
+        )
+
+    def watch_board(
+        self,
+        request: protocollab_dot_v1_dot_greet__pb2.WatchRequest,
+        *,
+        headers: Headers | Mapping[str, str] | None = None,
+        timeout_ms: int | None = None,
+    ) -> AsyncIterator[protocollab_dot_v1_dot_greet__pb2.BoardEvent]:
+        return self.execute_server_stream(
+            request=request,
+            method=MethodInfo(
+                name="WatchBoard",
+                service_name="protocollab.v1.BoardService",
+                input=protocollab_dot_v1_dot_greet__pb2.WatchRequest,
+                output=protocollab_dot_v1_dot_greet__pb2.BoardEvent,
+                idempotency_level=IdempotencyLevel.UNKNOWN,
+            ),
+            headers=headers,
+            timeout_ms=timeout_ms,
+        )
+
 
 
 
@@ -122,6 +209,91 @@ class GreetServiceClientSync(ConnectClientSync):
                 service_name="protocollab.v1.GreetService",
                 input=protocollab_dot_v1_dot_greet__pb2.GreetRequest,
                 output=protocollab_dot_v1_dot_greet__pb2.GreetResponse,
+                idempotency_level=IdempotencyLevel.UNKNOWN,
+            ),
+            headers=headers,
+            timeout_ms=timeout_ms,
+        )
+
+class BoardServiceSync(Protocol):
+    def get_board_stats(self, request: protocollab_dot_v1_dot_greet__pb2.BoardStatsRequest, ctx: RequestContext) -> protocollab_dot_v1_dot_greet__pb2.BoardStatsResponse:
+        raise ConnectError(Code.UNIMPLEMENTED, "Not implemented")
+    def watch_board(self, request: protocollab_dot_v1_dot_greet__pb2.WatchRequest, ctx: RequestContext) -> Iterator[protocollab_dot_v1_dot_greet__pb2.BoardEvent]:
+        raise ConnectError(Code.UNIMPLEMENTED, "Not implemented")
+
+
+class BoardServiceWSGIApplication(ConnectWSGIApplication):
+    def __init__(self, service: BoardServiceSync, interceptors: Iterable[InterceptorSync]=(), read_max_bytes: int | None = None, compressions: Iterable[Compression] | None = None, codecs: Iterable[Codec] | None = None) -> None:
+        super().__init__(
+            endpoints={
+                "/protocollab.v1.BoardService/GetBoardStats": EndpointSync.unary(
+                    method=MethodInfo(
+                        name="GetBoardStats",
+                        service_name="protocollab.v1.BoardService",
+                        input=protocollab_dot_v1_dot_greet__pb2.BoardStatsRequest,
+                        output=protocollab_dot_v1_dot_greet__pb2.BoardStatsResponse,
+                        idempotency_level=IdempotencyLevel.UNKNOWN,
+                    ),
+                    function=service.get_board_stats,
+                ),
+                "/protocollab.v1.BoardService/WatchBoard": EndpointSync.server_stream(
+                    method=MethodInfo(
+                        name="WatchBoard",
+                        service_name="protocollab.v1.BoardService",
+                        input=protocollab_dot_v1_dot_greet__pb2.WatchRequest,
+                        output=protocollab_dot_v1_dot_greet__pb2.BoardEvent,
+                        idempotency_level=IdempotencyLevel.UNKNOWN,
+                    ),
+                    function=service.watch_board,
+                ),
+            },
+            interceptors=interceptors,
+            read_max_bytes=read_max_bytes,
+            compressions=compressions,
+            codecs=codecs,
+        )
+
+    @property
+    def path(self) -> str:
+        """Returns the URL path to mount the application to when serving multiple applications."""
+        return "/protocollab.v1.BoardService"
+
+
+class BoardServiceClientSync(ConnectClientSync):
+    def get_board_stats(
+        self,
+        request: protocollab_dot_v1_dot_greet__pb2.BoardStatsRequest,
+        *,
+        headers: Headers | Mapping[str, str] | None = None,
+        timeout_ms: int | None = None,
+    ) -> protocollab_dot_v1_dot_greet__pb2.BoardStatsResponse:
+        return self.execute_unary(
+            request=request,
+            method=MethodInfo(
+                name="GetBoardStats",
+                service_name="protocollab.v1.BoardService",
+                input=protocollab_dot_v1_dot_greet__pb2.BoardStatsRequest,
+                output=protocollab_dot_v1_dot_greet__pb2.BoardStatsResponse,
+                idempotency_level=IdempotencyLevel.UNKNOWN,
+            ),
+            headers=headers,
+            timeout_ms=timeout_ms,
+        )
+
+    def watch_board(
+        self,
+        request: protocollab_dot_v1_dot_greet__pb2.WatchRequest,
+        *,
+        headers: Headers | Mapping[str, str] | None = None,
+        timeout_ms: int | None = None,
+    ) -> Iterator[protocollab_dot_v1_dot_greet__pb2.BoardEvent]:
+        return self.execute_server_stream(
+            request=request,
+            method=MethodInfo(
+                name="WatchBoard",
+                service_name="protocollab.v1.BoardService",
+                input=protocollab_dot_v1_dot_greet__pb2.WatchRequest,
+                output=protocollab_dot_v1_dot_greet__pb2.BoardEvent,
                 idempotency_level=IdempotencyLevel.UNKNOWN,
             ),
             headers=headers,

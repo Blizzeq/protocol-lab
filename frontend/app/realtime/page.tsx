@@ -1,180 +1,574 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { API, jsonHeaders, listBoards } from "@/lib/api";
+
+import { hlJsonHtml, Pre } from "../components/playground/hl";
 import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+  Caption,
+  ConnectionBadge,
+  connBadge,
+  type ConnState,
+  MetricStat,
+  PageHeader,
+  Panel,
+  StepList,
+  useAuth,
+} from "../components/playground/ui";
 
-import { API, authHeaders, getToken } from "@/lib/api";
+// Event names the backend emits onto the bus (see realtime/router.py + events.py).
+const EVENT_NAMES = [
+  "board.created",
+  "task.created",
+  "task.updated",
+  "task.deleted",
+  "client.message",
+  "webhook.received",
+  "webhook.test",
+] as const;
 
-import AuthBar from "../components/AuthBar";
+// Per-type tag colors, ported 1:1 from the design prototype.
+const TYPE_COLOR: Record<string, string> = {
+  "task.created": "#4ade80",
+  "task.updated": "#fbbf24",
+  "task.deleted": "#f87171",
+  "board.created": "#38bdf8",
+  "client.message": "#4ade80",
+  "webhook.received": "#38bdf8",
+  "webhook.test": "#fbbf24",
+};
 
-type Evt = {
+type RawEvent = {
   type: string;
   board_id: string | null;
   payload: Record<string, unknown>;
-  ts: string;
+  ts?: string;
 };
 
-const EVENT_TYPES = ["board.created", "task.created", "task.updated", "task.deleted", "client.message"];
-const STATUS_COLOR: Record<string, string> = {
-  open: "bg-neon",
-  connecting: "bg-warn",
-  reconnecting: "bg-warn",
+type Frame = {
+  id: string;
+  type: string;
+  color: string;
+  ts: string; // HH:MM:SS
+  summary: string; // compact "k: v  k: v"
+  raw: RawEvent;
 };
+
+const FRAME_CAP = 9;
+const CHART_CAP = 26;
+
+function hhmmss(iso?: string): string {
+  const d = iso ? new Date(iso) : new Date();
+  const t = Number.isNaN(d.getTime()) ? new Date() : d;
+  return t.toTimeString().slice(0, 8);
+}
+
+function summarize(payload: Record<string, unknown>): string {
+  return Object.entries(payload)
+    .map(([k, v]) => `${k}: ${typeof v === "string" ? v : JSON.stringify(v)}`)
+    .join("  ");
+}
+
+let frameSeq = 0;
+function toFrame(ev: RawEvent): Frame {
+  const payload = ev.payload && typeof ev.payload === "object" ? ev.payload : {};
+  return {
+    id: `f_${Date.now()}_${frameSeq++}`,
+    type: ev.type,
+    color: TYPE_COLOR[ev.type] ?? "#8595ab",
+    ts: hhmmss(ev.ts),
+    summary: summarize(payload),
+    raw: ev,
+  };
+}
+
+// Map a series of cumulative counts to SVG paths inside the 300×76 viewBox.
+const CHART_W = 300;
+const CHART_H = 76;
+function chartPaths(data: number[]): { line: string; area: string } | null {
+  const n = data.length;
+  if (n < 2) return null;
+  const max = Math.max(...data, 1);
+  const min = Math.min(...data);
+  const span = Math.max(max - min, 1);
+  const pts = data.map((val, i) => {
+    const x = (i / (n - 1)) * CHART_W;
+    const y = CHART_H - 6 - ((val - min) / span) * (CHART_H - 14);
+    return `${x.toFixed(1)} ${y.toFixed(1)}`;
+  });
+  const line = "M " + pts.join(" L ");
+  const area = `${line} L ${CHART_W} ${CHART_H} L 0 ${CHART_H} Z`;
+  return { line, area };
+}
 
 export default function RealtimePage() {
-  const [events, setEvents] = useState<Evt[]>([]);
-  const [status, setStatus] = useState("connecting");
-  const [chart, setChart] = useState<{ t: string; total: number }[]>([]);
-  const [total, setTotal] = useState(0);
-  const [signedIn, setSignedIn] = useState(false);
+  useAuth();
+
+  const [transport, setTransport] = useState<"SSE" | "WebSocket">("SSE");
+  const [connState, setConnState] = useState<ConnState>("connecting");
+  const [frames, setFrames] = useState<Frame[]>([]);
+  const [count, setCount] = useState(0);
+  const [chart, setChart] = useState<number[]>([]);
+  const [openFrame, setOpenFrame] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
 
-  const [wsStatus, setWsStatus] = useState("disconnected");
-  const [wsMsg, setWsMsg] = useState("");
+  // WebSocket panel
+  const [wsState, setWsState] = useState<ConnState>("closed");
+  const [wsMessage, setWsMessage] = useState("");
+
+  const esRef = useRef<EventSource | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
+  const reopenTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const countRef = useRef(0);
 
-  useEffect(() => {
-    setSignedIn(!!getToken());
-    const es = new EventSource(`${API}/api/v1/stream`);
-    es.onopen = () => setStatus("open");
-    es.onerror = () => setStatus("reconnecting");
-
-    const handler = (e: MessageEvent) => {
-      try {
-        const data = JSON.parse(e.data) as Evt;
-        setEvents((prev) => [data, ...prev].slice(0, 50));
-        setTotal((n) => n + 1);
-        const t = new Date(data.ts).toLocaleTimeString();
-        setChart((prev) => [...prev, { t, total: (prev.at(-1)?.total ?? 0) + 1 }].slice(-30));
-      } catch {
-        // ignore keep-alive comments
-      }
-    };
-    EVENT_TYPES.forEach((name) => es.addEventListener(name, handler as EventListener));
-    return () => es.close();
+  const ingest = useCallback((ev: RawEvent) => {
+    const frame = toFrame(ev);
+    setFrames((prev) => [frame, ...prev].slice(0, FRAME_CAP));
+    countRef.current += 1;
+    const next = countRef.current;
+    setCount(next);
+    setChart((prev) => [...prev, next].slice(-CHART_CAP));
   }, []);
 
-  async function generateEvent() {
+  // ── SSE: the always-on feed source ─────────────────────────────────────────
+  const openStream = useCallback(() => {
+    esRef.current?.close();
+    const es = new EventSource(`${API}/api/v1/stream`);
+    esRef.current = es;
+    setConnState("connecting");
+
+    es.onopen = () => setConnState("open");
+    es.onerror = () => {
+      // EventSource auto-reconnects; reflect that as "reconnecting".
+      if (es.readyState !== EventSource.CLOSED) setConnState("reconnecting");
+    };
+
+    for (const name of EVENT_NAMES) {
+      es.addEventListener(name, (e) => {
+        try {
+          const data = JSON.parse((e as MessageEvent).data) as RawEvent;
+          ingest(data);
+        } catch {
+          /* ignore malformed frame */
+        }
+      });
+    }
+  }, [ingest]);
+
+  useEffect(() => {
+    openStream();
+    return () => {
+      if (reopenTimer.current) clearTimeout(reopenTimer.current);
+      // Null the handlers before closing so a late socket callback can't setState
+      // on the unmounted component.
+      const es = esRef.current;
+      if (es) {
+        es.onopen = null;
+        es.onerror = null;
+        es.close();
+      }
+      const ws = wsRef.current;
+      if (ws) {
+        ws.onopen = null;
+        ws.onclose = null;
+        ws.onerror = null;
+        ws.close();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Generate event: real POST → arrives back through SSE as task.created ────
+  async function generate() {
     setNote(null);
-    const boards = await fetch(`${API}/api/v1/boards`, { headers: authHeaders() }).then((r) => r.json());
-    const board = boards.items?.[0];
+    const boards = await listBoards();
+    const board = boards[0];
     if (!board) {
-      setNote('No board yet — go to Home and click "Create sample data".');
+      setNote("No board yet — create sample data on Home.");
       return;
     }
     await fetch(`${API}/api/v1/boards/${board.id}/tasks`, {
       method: "POST",
-      headers: { ...authHeaders(), "content-type": "application/json" },
+      headers: jsonHeaders(),
       body: JSON.stringify({ title: `Task @ ${new Date().toLocaleTimeString()}` }),
     });
+    // The resulting task.created event arrives via the SSE stream above.
   }
 
+  // ── Drop connection: close + reopen so the state machine animates ───────────
+  function drop() {
+    if (reopenTimer.current) clearTimeout(reopenTimer.current);
+    esRef.current?.close();
+    esRef.current = null;
+    setConnState("reconnecting");
+    reopenTimer.current = setTimeout(() => {
+      openStream();
+    }, 1200);
+  }
+
+  // ── WebSocket panel ─────────────────────────────────────────────────────────
   function connectWs() {
+    if (wsState === "open" || wsState === "connecting") return;
+    setWsState("connecting");
     const ws = new WebSocket(`${API.replace(/^http/, "ws")}/api/v1/ws`);
-    ws.onopen = () => setWsStatus("connected");
-    ws.onclose = () => setWsStatus("disconnected");
-    ws.onerror = () => setWsStatus("error");
     wsRef.current = ws;
+    ws.onopen = () => setWsState("open");
+    ws.onclose = () => setWsState("closed");
+    ws.onerror = () => setWsState("error");
   }
 
   function sendWs() {
-    if (wsRef.current?.readyState === WebSocket.OPEN && wsMsg) {
-      wsRef.current.send(wsMsg);
-      setWsMsg("");
-    }
+    const ws = wsRef.current;
+    const msg = wsMessage.trim();
+    if (!ws || ws.readyState !== WebSocket.OPEN || !msg) return;
+    ws.send(msg);
+    setWsMessage("");
   }
 
+  const rtBadge = connBadge(connState);
+  const wsBadge = connBadge(wsState);
+  const wsConnLabel =
+    wsState === "open" ? "connected" : wsState === "connecting" ? "connecting…" : "Connect";
+  const wsCanSend = wsState === "open";
+  const paths = chartPaths(chart);
+
+  const chip = (active: boolean): React.CSSProperties => ({
+    fontFamily: "inherit",
+    fontSize: 12,
+    padding: "6px 14px",
+    borderRadius: 7,
+    cursor: "pointer",
+    border: `1px solid ${active ? "#4ade80" : "#202c3e"}`,
+    background: active ? "rgba(74,222,128,.08)" : "transparent",
+    color: active ? "#4ade80" : "#8595ab",
+  });
+
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10">
-      <Link href="/" className="text-sm text-muted hover:text-fg">$ cd ..</Link>
-      <h1 className="mt-3 text-2xl font-bold text-fg">$ realtime --sse --ws</h1>
-      <p className="mt-2 text-sm text-muted">
-        The server pushes board activity to the browser over Server-Sent Events (SSE).
-      </p>
+    <div>
+      <PageHeader
+        command="realtime"
+        flag="--sse --ws"
+        subtitle="The server pushes board activity to the browser. Watch frames arrive live, then watch the connection heal itself."
+      />
+      <StepList
+        steps={[
+          <>
+            The feed is already <span style={{ color: "#4ade80" }}>live</span>, no sign-in to watch.
+          </>,
+          <>
+            <span style={{ color: "#4ade80" }}>Generate</span> an event, and it appears instantly.
+          </>,
+          <>
+            <span style={{ color: "#4ade80" }}>Drop</span> the connection and watch it heal.
+          </>,
+        ]}
+      />
 
-      <ol className="panel mt-4 list-decimal space-y-1 p-4 pl-8 text-sm text-fg/90">
-        <li>The feed below is already live (no sign-in needed to watch).</li>
-        <li>Sign in, then click <span className="text-neon">Generate an event</span> — a new task appears instantly.</li>
-        <li>Or open this page in a second tab and create a task there; both tabs update at once.</li>
-      </ol>
-
-      <div className="mt-4">
-        <AuthBar onChange={() => setSignedIn(!!getToken())} />
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
-        <span className={`inline-block h-2.5 w-2.5 rounded-full ${STATUS_COLOR[status] ?? "bg-muted"}`} />
-        <span className="text-fg">SSE: {status}</span>
-        <span className="text-muted">· {total} events received</span>
-        <button onClick={generateEvent} disabled={!signedIn} className="btn-neon">
-          Generate an event
-        </button>
-        {note && <span className="text-warn">{note}</span>}
-      </div>
-
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <section>
-          <h2 className="text-sm font-semibold text-fg">live activity feed</h2>
-          <ul className="panel mt-2 max-h-96 space-y-1 overflow-auto p-3 text-xs">
-            {events.length === 0 && <li className="text-muted">Waiting for events…</li>}
-            {events.map((e, i) => (
-              <li key={i} className="flex gap-2">
-                <span className="text-neon">{e.type}</span>
-                <span className="truncate text-muted">{JSON.stringify(e.payload)}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-sm font-semibold text-fg">events over time</h2>
-          <div className="panel mt-2 h-64 p-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chart}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#202c3e" />
-                <XAxis dataKey="t" hide />
-                <YAxis allowDecimals={false} width={28} stroke="#8595ab" fontSize={11} />
-                <Tooltip
-                  contentStyle={{ background: "#111824", border: "1px solid #202c3e", fontSize: 12 }}
-                  labelStyle={{ color: "#8595ab" }}
-                />
-                <Line type="monotone" dataKey="total" stroke="#4ade80" dot={false} isAnimationActive={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </section>
-      </div>
-
-      <section className="panel mt-8 p-4">
-        <h2 className="text-sm font-semibold text-fg">websocket (bidirectional)</h2>
-        <p className="mt-1 text-sm text-muted">
-          Click <span className="text-neon">Connect</span>, type a message and <span className="text-neon">Send</span> —
-          the server broadcasts it back through the same bus, so it appears in the feed above as a{" "}
-          <code className="text-cyan">client.message</code> event.
-        </p>
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-          <button onClick={connectWs} className="btn">Connect</button>
-          <span className="text-muted">WS: {wsStatus}</span>
-          <input
-            value={wsMsg}
-            onChange={(e) => setWsMsg(e.target.value)}
-            placeholder="Message to broadcast"
-            className="input flex-1"
-          />
-          <button onClick={sendWs} disabled={wsStatus !== "connected"} className="btn-neon">
-            Send
+      {/* control strip */}
+      <Panel
+        style={{
+          padding: "14px 18px",
+          marginBottom: 16,
+          display: "flex",
+          alignItems: "center",
+          gap: 16,
+          flexWrap: "wrap",
+        }}
+      >
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={() => setTransport("SSE")} style={chip(transport === "SSE")}>
+            SSE
+          </button>
+          <button onClick={() => setTransport("WebSocket")} style={chip(transport === "WebSocket")}>
+            WebSocket
           </button>
         </div>
-      </section>
-    </main>
+        <div style={{ width: 1, height: 22, background: "#202c3e" }} />
+        <ConnectionBadge label={rtBadge.label} color={rtBadge.color} pulse={rtBadge.pulse} />
+        <span style={{ color: "#8595ab", fontSize: 12 }}>
+          frames received <span style={{ color: "#d7e0ee", fontWeight: 700 }}>{count}</span>
+        </span>
+        <div style={{ flex: 1 }} />
+        <button
+          onClick={generate}
+          onMouseEnter={(e) => (e.currentTarget.style.filter = "brightness(1.15)")}
+          onMouseLeave={(e) => (e.currentTarget.style.filter = "none")}
+          style={{
+            background: "rgba(74,222,128,.10)",
+            border: "1px solid #4ade80",
+            color: "#4ade80",
+            fontFamily: "inherit",
+            fontSize: 12.5,
+            fontWeight: 700,
+            padding: "9px 15px",
+            borderRadius: 8,
+            cursor: "pointer",
+          }}
+        >
+          ▸ Generate event
+        </button>
+        <button
+          onClick={drop}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = "#f87171";
+            e.currentTarget.style.color = "#f87171";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "#202c3e";
+            e.currentTarget.style.color = "#8595ab";
+          }}
+          style={{
+            background: "transparent",
+            border: "1px solid #202c3e",
+            color: "#8595ab",
+            fontFamily: "inherit",
+            fontSize: 12.5,
+            padding: "9px 14px",
+            borderRadius: 8,
+            cursor: "pointer",
+          }}
+        >
+          Drop connection
+        </button>
+        {note && (
+          <div style={{ flexBasis: "100%", color: "#fbbf24", fontSize: 10.5, lineHeight: 1.5 }}>
+            {note}
+          </div>
+        )}
+      </Panel>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)",
+          gap: 16,
+          alignItems: "start",
+        }}
+      >
+        {/* frame feed */}
+        <Panel>
+          <Caption>// live frame feed</Caption>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: 300 }}>
+            {frames.length === 0 ? (
+              <div
+                style={{
+                  flex: 1,
+                  minHeight: 300,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#3f4d63",
+                  fontSize: 12,
+                }}
+              >
+                // waiting for frames…
+              </div>
+            ) : (
+              frames.map((f) => {
+                const isOpen = openFrame === f.id;
+                return (
+                  <div
+                    key={f.id}
+                    style={{
+                      background: "#0d131d",
+                      border: "1px solid #202c3e",
+                      borderRadius: 9,
+                      overflow: "hidden",
+                      animation: "pl-slidein .3s ease",
+                    }}
+                  >
+                    <button
+                      onClick={() => setOpenFrame((cur) => (cur === f.id ? null : f.id))}
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        textAlign: "left",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        fontFamily: "inherit",
+                        padding: "11px 13px",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                        <span style={{ color: "#3f4d63", fontSize: 11, flex: "none" }}>
+                          {isOpen ? "▾" : "▸"}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 10.5,
+                            fontWeight: 700,
+                            color: f.color,
+                            border: `1px solid ${f.color}`,
+                            borderRadius: 5,
+                            padding: "2px 7px",
+                            flex: "none",
+                          }}
+                        >
+                          {f.type}
+                        </span>
+                        <div style={{ flex: 1 }} />
+                        <span style={{ color: "#3f4d63", fontSize: 10.5 }}>{f.ts}</span>
+                      </div>
+                      <div
+                        style={{
+                          color: "#8595ab",
+                          fontSize: 11.5,
+                          lineHeight: 1.5,
+                          wordBreak: "break-word",
+                          paddingLeft: 21,
+                        }}
+                      >
+                        {f.summary}
+                      </div>
+                    </button>
+                    {isOpen && (
+                      <Pre
+                        html={hlJsonHtml(f.raw)}
+                        style={{
+                          margin: 0,
+                          padding: "11px 13px",
+                          borderTop: "1px solid #202c3e",
+                          background: "#0b0f17",
+                          borderRadius: 0,
+                          fontSize: 11,
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </Panel>
+
+        {/* chart */}
+        <Panel>
+          <Caption>// events over time</Caption>
+          <div
+            style={{
+              background: "#0d131d",
+              border: "1px solid #202c3e",
+              borderRadius: 9,
+              padding: 14,
+              backgroundImage:
+                "linear-gradient(#14202f 1px,transparent 1px),linear-gradient(90deg,#14202f 1px,transparent 1px)",
+              backgroundSize: "30px 24px",
+            }}
+          >
+            {paths ? (
+              <svg
+                viewBox="0 0 300 76"
+                preserveAspectRatio="none"
+                style={{ width: "100%", height: 200, display: "block" }}
+              >
+                <path d={paths.area} fill="rgba(74,222,128,.13)" stroke="none" />
+                <path
+                  d={paths.line}
+                  fill="none"
+                  stroke="#4ade80"
+                  strokeWidth={1.5}
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+            ) : (
+              <div
+                style={{
+                  height: 200,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#3f4d63",
+                  fontSize: 12,
+                }}
+              >
+                // waiting for frames…
+              </div>
+            )}
+          </div>
+          <div style={{ display: "flex", gap: 12, marginTop: 14 }}>
+            <MetricStat value={count} label="FRAMES RECEIVED" color="#4ade80" big={22} />
+            <MetricStat value={transport} label="TRANSPORT" color="#38bdf8" big={15} />
+          </div>
+        </Panel>
+      </div>
+
+      {/* websocket panel */}
+      <Panel style={{ padding: "16px 18px", marginTop: 16 }}>
+        <div
+          style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, flexWrap: "wrap" }}
+        >
+          <div style={{ color: "#8595ab", fontSize: 11 }}>// websocket · bidirectional</div>
+          <div style={{ flex: 1 }} />
+          <ConnectionBadge label={wsBadge.label} color={wsBadge.color} pulse={wsBadge.pulse} />
+          <button
+            onClick={connectWs}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "#38bdf8";
+              e.currentTarget.style.color = "#38bdf8";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "#202c3e";
+              e.currentTarget.style.color = "#d7e0ee";
+            }}
+            style={{
+              background: "transparent",
+              border: "1px solid #202c3e",
+              color: "#d7e0ee",
+              fontFamily: "inherit",
+              fontSize: 12,
+              padding: "7px 13px",
+              borderRadius: 7,
+              cursor: "pointer",
+            }}
+          >
+            {wsConnLabel}
+          </button>
+        </div>
+        <div style={{ display: "flex", gap: 10 }}>
+          <input
+            value={wsMessage}
+            onChange={(e) => setWsMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") sendWs();
+            }}
+            placeholder="type a message to broadcast…"
+            style={{
+              flex: 1,
+              background: "#0d131d",
+              border: "1px solid #202c3e",
+              borderRadius: 8,
+              color: "#d7e0ee",
+              fontFamily: "inherit",
+              fontSize: 13,
+              padding: "9px 12px",
+              outline: "none",
+            }}
+          />
+          <button
+            onClick={sendWs}
+            style={{
+              background: wsCanSend ? "rgba(74,222,128,.10)" : "#0d131d",
+              border: `1px solid ${wsCanSend ? "#4ade80" : "#202c3e"}`,
+              color: wsCanSend ? "#4ade80" : "#3f4d63",
+              fontFamily: "inherit",
+              fontSize: 12.5,
+              fontWeight: 700,
+              padding: "9px 16px",
+              borderRadius: 8,
+              cursor: wsCanSend ? "pointer" : "default",
+              flex: "none",
+            }}
+          >
+            Send →
+          </button>
+        </div>
+        <div style={{ color: "#3f4d63", fontSize: 11, marginTop: 10, lineHeight: 1.5 }}>
+          The message is broadcast back through the same bus and appears in the feed above as a{" "}
+          <span style={{ color: "#4ade80" }}>client.message</span> frame.
+        </div>
+      </Panel>
+    </div>
   );
 }

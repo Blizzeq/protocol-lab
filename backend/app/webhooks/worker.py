@@ -18,8 +18,8 @@ from app.db.session import get_sessionmaker
 from app.models.webhooks import WebhookDelivery, WebhookEndpoint
 from app.webhooks.security import sign
 
-MAX_ATTEMPTS = 5
-BACKOFF_SECONDS = [2, 5, 15, 30, 60]  # short, demo-friendly schedule
+MAX_ATTEMPTS = 4
+BACKOFF_SECONDS = [1, 2, 4]  # demo-friendly: dead-letter after ~7s of backoff (+ poll latency)
 POLL_INTERVAL_SECONDS = 2
 HTTP_TIMEOUT_SECONDS = 10
 

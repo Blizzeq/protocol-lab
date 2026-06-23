@@ -15,3 +15,33 @@ service GreetService {
   // Unary RPC — typed contract, callable from the browser over the Connect protocol.
   rpc Greet(GreetRequest) returns (GreetResponse) {}
 }
+
+// ── BoardService — a real typed contract over the task-board data ───────────
+message BoardStatsRequest {
+  string board_id = 1;
+}
+
+message BoardStatsResponse {
+  int32 total = 1;
+  int32 todo = 2;
+  int32 in_progress = 3;
+  int32 done = 4;
+  int32 members = 5;
+}
+
+message WatchRequest {
+  string board_id = 1;
+}
+
+message BoardEvent {
+  int64 seq = 1;
+  string type = 2; // task.created | task.updated | task.deleted
+  string task_id = 3;
+}
+
+service BoardService {
+  // Unary — aggregate task counts for a board.
+  rpc GetBoardStats(BoardStatsRequest) returns (BoardStatsResponse) {}
+  // Server-streaming — push a typed frame for every task change on the board.
+  rpc WatchBoard(WatchRequest) returns (stream BoardEvent) {}
+}

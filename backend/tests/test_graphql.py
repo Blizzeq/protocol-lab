@@ -1,4 +1,4 @@
-"""GraphQL integration tests — the same services/ layer as REST."""
+"""GraphQL integration tests - the same services/ layer as REST."""
 
 import httpx
 import pytest

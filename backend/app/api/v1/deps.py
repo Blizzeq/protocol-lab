@@ -1,4 +1,4 @@
-"""FastAPI dependencies for REST v1 — primarily authentication."""
+"""FastAPI dependencies for REST v1 - primarily authentication."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from app.models.task_board import User
 from app.services import auth as auth_service
 from app.services.exceptions import AuthenticationError
 
-# auto_error=False — we return a consistent RFC 9457 error ourselves, handling both mechanisms.
+# auto_error=False - we return a consistent RFC 9457 error ourselves, handling both mechanisms.
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token", auto_error=False)
 api_key_scheme = APIKeyHeader(name="X-API-Key", auto_error=False)
 

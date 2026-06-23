@@ -44,5 +44,5 @@ class ApiKeyRead(BaseModel):
 
 
 class ApiKeyCreated(ApiKeyRead):
-    # Full key — returned ONLY at creation time, never afterwards.
+    # Full key - returned ONLY at creation time, never afterwards.
     api_key: str

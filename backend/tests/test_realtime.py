@@ -15,7 +15,7 @@ requires_db = pytest.mark.skipif(
 
 
 async def test_event_bus_publish_subscribe():
-    """Pure unit test — no database, always runs (incl. CI)."""
+    """Pure unit test - no database, always runs (incl. CI)."""
     eb = EventBus()
     async with eb.subscribe() as queue:
         await eb.publish({"type": "ping"})

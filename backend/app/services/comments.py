@@ -1,4 +1,4 @@
-"""Comment service — authorization via the owner of the task's board."""
+"""Comment service - authorization via the owner of the task's board."""
 
 from __future__ import annotations
 

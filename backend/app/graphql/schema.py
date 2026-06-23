@@ -1,4 +1,4 @@
-"""GraphQL schema — Query / Mutation / Subscription.
+"""GraphQL schema - Query / Mutation / Subscription.
 
 Resolvers call the same `services/` layer as REST → identical data and authorization.
 """

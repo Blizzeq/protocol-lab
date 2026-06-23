@@ -67,7 +67,7 @@ async function runTool(tool: string, args: Record<string, string>): Promise<Tool
       const boardId = args.board_id || (await listBoards())[0]?.id;
       if (!boardId)
         return {
-          result: { error: "No board found — sign in and create sample data first." },
+          result: { error: "No board found - sign in and create sample data first." },
           text: "No board available.",
         };
       const r = await fetch(`${API}/api/v1/boards/${boardId}/tasks`, { headers: authHeaders() });
@@ -104,7 +104,7 @@ async function runTool(tool: string, args: Record<string, string>): Promise<Tool
       const boardId = args.board_id || (await listBoards())[0]?.id;
       if (!boardId)
         return {
-          result: { error: "No board found — sign in and create sample data first." },
+          result: { error: "No board found - sign in and create sample data first." },
           text: "No board available.",
         };
       const title = args.title || "Review auth flow";

@@ -11,20 +11,20 @@ class Settings(BaseSettings):
     app_name: str = "Protocol Lab"
     environment: str = "development"
 
-    # Infrastructure — wired up in subsequent milestones
+    # Infrastructure - wired up in subsequent milestones
     database_url: str | None = None
     redis_url: str | None = None
 
-    # SQL query logging (noisy — off by default, enable for debugging)
+    # SQL query logging (noisy - off by default, enable for debugging)
     db_echo: bool = False
 
     # Auth / JWT
-    # Min. 32 bytes for HS256. This is a DEV value — in production set it via env.
+    # Min. 32 bytes for HS256. This is a DEV value - in production set it via env.
     jwt_secret: str = "dev-only-insecure-jwt-secret-change-me-in-production"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
 
-    # CORS — frontend origins (Next.js). Comma-separated list in env.
+    # CORS - frontend origins (Next.js). Comma-separated list in env.
     cors_origins: str = "http://localhost:3000"
 
     # MCP server acts as this Protocol Lab user (a `pl_` API key). Set via env MCP_API_KEY.

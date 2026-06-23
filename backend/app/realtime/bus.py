@@ -1,7 +1,7 @@
 """In-process async event bus (pub/sub) for real-time fan-out.
 
 Single-instance only. For multi-instance deployments, back this with Redis pub/sub
-(each worker subscribes to a Redis channel and relays to its local subscribers) —
+(each worker subscribes to a Redis channel and relays to its local subscribers) -
 the public interface (publish / subscribe) stays the same.
 """
 
@@ -18,7 +18,7 @@ class EventBus:
 
     async def publish(self, event: dict) -> None:
         # Fan out to every subscriber. Drop on a full queue (slow consumer) instead
-        # of blocking the publisher — bounded backpressure.
+        # of blocking the publisher - bounded backpressure.
         for queue in list(self._subscribers):
             try:
                 queue.put_nowait(event)

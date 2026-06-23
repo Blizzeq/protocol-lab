@@ -1,4 +1,4 @@
-"""Domain event helpers — published to the in-process bus, consumed by SSE/WebSocket.
+"""Domain event helpers - published to the in-process bus, consumed by SSE/WebSocket.
 
 Called from the shared service layer, so both REST and GraphQL mutations emit events.
 """

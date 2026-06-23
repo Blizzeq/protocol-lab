@@ -1,4 +1,4 @@
-"""Quick database connectivity check — connection + PG version + listing protocol_lab tables.
+"""Quick database connectivity check - connection + PG version + listing protocol_lab tables.
 
 Run: uv run python scripts/check_db.py
 """
@@ -35,7 +35,7 @@ async def main() -> None:
     finally:
         await engine.dispose()
 
-    print("OK — connected to Supabase ✅")
+    print("OK - connected to Supabase ✅")
     print("Postgres:", version.split(" on ")[0])
     print(f"Tables in protocol_lab ({len(tables)}):", ", ".join(tables))
 

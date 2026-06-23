@@ -56,7 +56,7 @@ async def delete_tag(db: AsyncSession, *, tag: Tag) -> None:
 async def attach_tag(db: AsyncSession, *, task: Task, tag: Tag) -> None:
     if tag.board_id != task.board_id:
         raise ConflictError("The tag belongs to a different board than the task.")
-    # ON CONFLICT DO NOTHING — idempotent operation, no relationship loading (async-safe)
+    # ON CONFLICT DO NOTHING - idempotent operation, no relationship loading (async-safe)
     await db.execute(
         pg_insert(task_tags).values(task_id=task.id, tag_id=tag.id).on_conflict_do_nothing()
     )

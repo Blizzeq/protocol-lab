@@ -204,10 +204,10 @@ export default function RestPage() {
           <Caption style={{ marginBottom: 20 }}>// the wire</Caption>
           <StagePipeline stages={stages} />
           <div style={{ display: "flex", gap: 11, margin: "28px auto 0", maxWidth: 560 }}>
-            <MetricStat value={result ? result.latency : "—"} label="LATENCY MS" />
-            <MetricStat value={result ? result.bytes : "—"} label="RESPONSE BYTES" />
+            <MetricStat value={result ? result.latency : "-"} label="LATENCY MS" />
+            <MetricStat value={result ? result.bytes : "-"} label="RESPONSE BYTES" />
             <MetricStat
-              value={result ? result.code || "—" : "—"}
+              value={result ? result.code || "-" : "-"}
               label="STATUS CODE"
               color={result ? badgeColor : "#d7e0ee"}
             />
@@ -308,7 +308,7 @@ export default function RestPage() {
           </button>
           {!boardId && (
             <div style={{ color: "#fbbf24", fontSize: 10.5, marginTop: 10, lineHeight: 1.5 }}>
-              No board yet — sign in &amp; click &ldquo;Create sample data&rdquo; on Home for the task presets.
+              No board yet - sign in &amp; click &ldquo;Create sample data&rdquo; on Home for the task presets.
             </div>
           )}
         </Panel>

@@ -37,7 +37,7 @@ def get_engine() -> AsyncEngine:
 
 @lru_cache
 def get_sessionmaker() -> async_sessionmaker[AsyncSession]:
-    # expire_on_commit=False — avoid lazy-IO after commit (MissingGreenlet in async)
+    # expire_on_commit=False - avoid lazy-IO after commit (MissingGreenlet in async)
     return async_sessionmaker(get_engine(), expire_on_commit=False, autoflush=False)
 
 

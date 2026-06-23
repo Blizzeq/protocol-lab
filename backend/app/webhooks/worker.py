@@ -1,4 +1,4 @@
-"""Webhook delivery worker — DB-backed durable queue (no Redis needed).
+"""Webhook delivery worker - DB-backed durable queue (no Redis needed).
 
 Deliveries are persisted with a `next_retry_at`; this worker polls for due ones,
 POSTs them with signed headers, and reschedules failures with exponential backoff
@@ -56,7 +56,7 @@ async def _deliver(delivery: WebhookDelivery, endpoint: WebhookEndpoint) -> None
             delivery.last_error = None
         else:
             _schedule_retry(delivery, f"HTTP {resp.status_code}")
-    except Exception as exc:  # noqa: BLE001 — any delivery failure is retryable
+    except Exception as exc:  # noqa: BLE001 - any delivery failure is retryable
         delivery.last_response_code = None
         _schedule_retry(delivery, str(exc)[:500])
 
@@ -93,6 +93,6 @@ async def poller() -> None:
     while True:
         try:
             await process_due_deliveries()
-        except Exception:  # noqa: BLE001 — keep the loop alive on transient errors
+        except Exception:  # noqa: BLE001 - keep the loop alive on transient errors
             pass
         await asyncio.sleep(POLL_INTERVAL_SECONDS)

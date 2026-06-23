@@ -1,4 +1,4 @@
-"""REST integration tests — require a working database (DATABASE_URL).
+"""REST integration tests - require a working database (DATABASE_URL).
 
 Shared fixtures (client, register, cleanup_emails) live in conftest.py.
 In CI without secrets the tests are skipped.

@@ -185,7 +185,7 @@ export default function RealtimePage() {
     const boards = await listBoards();
     const board = boards[0];
     if (!board) {
-      setNote("No board yet — create sample data on Home.");
+      setNote("No board yet - create sample data on Home.");
       return;
     }
     await fetch(`${API}/api/v1/boards/${board.id}/tasks`, {

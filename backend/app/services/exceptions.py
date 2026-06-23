@@ -1,4 +1,4 @@
-"""Domain exceptions — independent of HTTP.
+"""Domain exceptions - independent of HTTP.
 
 Mapped to RFC 9457 responses in `app/core/errors.py`. This way the service
 layer knows nothing about HTTP and can be reused by GraphQL/MCP.

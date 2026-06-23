@@ -1,4 +1,4 @@
-"""Sanity-check of the ORM layer — does not require a database connection.
+"""Sanity-check of the ORM layer - does not require a database connection.
 
 Verifies that the models compile and are qualified with the `protocol_lab` schema.
 """

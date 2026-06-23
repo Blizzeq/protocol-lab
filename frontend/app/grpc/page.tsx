@@ -166,7 +166,7 @@ export default function GrpcPage() {
 
   const shownBytes =
     jsonBytes == null
-      ? "—"
+      ? "-"
       : wire === "binary"
         ? Math.max(8, Math.round(jsonBytes * 0.34))
         : jsonBytes;
@@ -407,7 +407,7 @@ export default function GrpcPage() {
 
           <div>
             <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
-              <MetricStat value={latency != null ? latency : "—"} label="LATENCY MS" big={19} />
+              <MetricStat value={latency != null ? latency : "-"} label="LATENCY MS" big={19} />
               <MetricStat
                 value={shownBytes}
                 label="PAYLOAD BYTES"
@@ -533,7 +533,7 @@ export default function GrpcPage() {
           )}
         </div>
         <div style={{ color: "#3f4d63", fontSize: 10.5, marginTop: 12, lineHeight: 1.5 }}>
-          Frames arrive when tasks change on that board — generate a task on the Real-time page or
+          Frames arrive when tasks change on that board - generate a task on the Real-time page or
           via REST. These are real BoardEvents from the server&apos;s EventBus.
         </div>
       </Panel>
@@ -547,7 +547,7 @@ export default function GrpcPage() {
             lineHeight: 1.5,
           }}
         >
-          No board yet — sign in &amp; click &ldquo;Create sample data&rdquo; on Home to enable the
+          No board yet - sign in &amp; click &ldquo;Create sample data&rdquo; on Home to enable the
           unary call and the stream.
         </div>
       )}

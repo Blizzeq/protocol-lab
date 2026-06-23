@@ -84,7 +84,7 @@ function signingHtml(eventType: string): string {
 export default function WebhooksPage() {
   const { signedIn } = useAuth();
 
-  // event-type checkboxes — webhook.test ON by default (so /test deliveries match).
+  // event-type checkboxes - webhook.test ON by default (so /test deliveries match).
   const [events, setEvents] = useState<Record<string, boolean>>({
     "webhook.test": true,
     "task.created": false,
@@ -123,7 +123,7 @@ export default function WebhooksPage() {
       const r = await fetch(`${API}/api/v1/webhooks/endpoints`, { headers: authHeaders() });
       if (r.ok) setEndpoints(await r.json());
     } catch {
-      /* offline — leave list as is */
+      /* offline - leave list as is */
     }
   }, [signedIn]);
 
@@ -271,7 +271,7 @@ export default function WebhooksPage() {
     try {
       await fetch(`${API}/api/v1/webhooks/test`, { method: "POST", headers: authHeaders() });
     } catch {
-      /* ignore — polling will simply find nothing */
+      /* ignore - polling will simply find nothing */
     }
 
     // Animate the 4 wire stages: Event fired → Queued → Signed → Delivering (active).
@@ -316,7 +316,7 @@ export default function WebhooksPage() {
           }
         }
       } catch {
-        /* transient — keep polling */
+        /* transient - keep polling */
       }
       if (Date.now() > deadline) {
         stopPoll();
@@ -477,7 +477,7 @@ export default function WebhooksPage() {
                 }}
               />
               <div style={{ color: "#8595ab", fontSize: 11, marginBottom: 14 }}>
-                delivery attempts · <span style={{ color: "#38bdf8" }}>{eventTypeLabel || "—"}</span>
+                delivery attempts · <span style={{ color: "#38bdf8" }}>{eventTypeLabel || "-"}</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                 {tracked ? (
@@ -926,7 +926,7 @@ export default function WebhooksPage() {
                     <span style={{ color: statusColor(r.status) }}>{r.status}</span>
                     <span>{r.attempts}</span>
                     <span style={{ color: codeColor(r.last_response_code, r.status) }}>
-                      {r.last_response_code ?? "—"}
+                      {r.last_response_code ?? "-"}
                     </span>
                   </div>
                 ))}

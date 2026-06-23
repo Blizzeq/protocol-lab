@@ -1,4 +1,4 @@
-# Protocol Lab — Backend
+# Protocol Lab - Backend
 
 FastAPI exposing a single dataset (a collaborative task board) through
 all modern information-exchange paradigms. The domain logic lives in

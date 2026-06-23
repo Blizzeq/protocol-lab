@@ -26,7 +26,7 @@ class EndpointRead(BaseModel):
 
 
 class EndpointCreated(EndpointRead):
-    # Signing secret — returned ONLY at creation time.
+    # Signing secret - returned ONLY at creation time.
     secret: str
 
 

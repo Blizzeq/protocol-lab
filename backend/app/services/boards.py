@@ -1,4 +1,4 @@
-"""Board service — logic + owner authorization. Shared layer."""
+"""Board service - logic + owner authorization. Shared layer."""
 
 from __future__ import annotations
 

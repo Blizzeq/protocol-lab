@@ -13,7 +13,7 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Protocol Lab",
   description:
-    "One dataset exposed through every modern API paradigm — REST, GraphQL, WebSocket/SSE, webhooks, gRPC, MCP.",
+    "One dataset exposed through every modern API paradigm - REST, GraphQL, WebSocket/SSE, webhooks, gRPC, MCP.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

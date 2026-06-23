@@ -1,6 +1,6 @@
-"""DataLoaders — batching of relational queries (anti-N+1).
+"""DataLoaders - batching of relational queries (anti-N+1).
 
-Created PER REQUEST (in the context), never globally — otherwise the cache would leak
+Created PER REQUEST (in the context), never globally - otherwise the cache would leak
 between requests/users.
 """
 

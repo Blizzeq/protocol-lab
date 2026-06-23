@@ -1,6 +1,6 @@
 """GraphQL context: DB session, current user (optional) and DataLoaders.
 
-Authentication works the same way as in REST (Bearer JWT or X-API-Key) — we reuse
+Authentication works the same way as in REST (Bearer JWT or X-API-Key) - we reuse
 the security schemes and the auth service.
 """
 

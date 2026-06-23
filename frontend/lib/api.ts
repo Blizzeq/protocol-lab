@@ -72,12 +72,12 @@ export async function login(email: string, password: string): Promise<void> {
   emitAuth();
 }
 
-/** Sign up (ignoring "already exists") then log in — used by the inline Home form. */
+/** Sign up (ignoring "already exists") then log in - used by the inline Home form. */
 export async function signUpThenLogin(email: string, password: string): Promise<void> {
   try {
     await register(email, password);
   } catch {
-    /* user may already exist — fall through to login */
+    /* user may already exist - fall through to login */
   }
   await login(email, password);
 }

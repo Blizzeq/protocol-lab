@@ -1,4 +1,4 @@
-"""Test for the Connect (gRPC) endpoint — no database, runs everywhere."""
+"""Test for the Connect (gRPC) endpoint - no database, runs everywhere."""
 
 import httpx
 from asgi_lifespan import LifespanManager

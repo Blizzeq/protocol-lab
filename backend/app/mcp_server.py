@@ -1,6 +1,6 @@
 """MCP server (FastMCP) exposing Protocol Lab data to AI clients like Claude.
 
-Curated, well-described tools over the SAME service layer as REST/GraphQL — not an
+Curated, well-described tools over the SAME service layer as REST/GraphQL - not an
 auto-mirror of every endpoint (LLMs do better with a few focused tools). The server
 acts as one Protocol Lab user, identified by the MCP_API_KEY env var (a `pl_` API key).
 

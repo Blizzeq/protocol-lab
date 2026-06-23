@@ -1,8 +1,8 @@
-"""FastAPI entry point — intentionally thin.
+"""FastAPI entry point - intentionally thin.
 
 Creates the application, wires up middleware and routers. Domain logic lives in
 ``app/services`` and is shared across ALL paradigms (REST, GraphQL,
-MCP, Connect) — this is the cornerstone of the project's architecture.
+MCP, Connect) - this is the cornerstone of the project's architecture.
 """
 
 import asyncio
@@ -62,7 +62,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Rate limiting (slowapi) — limiter in app.state + middleware applying default limits
+# Rate limiting (slowapi) - limiter in app.state + middleware applying default limits
 app.state.limiter = limiter
 app.add_middleware(SlowAPIMiddleware)
 
@@ -70,7 +70,7 @@ register_error_handlers(app)
 app.include_router(api_router)
 add_pagination(app)
 
-# GraphQL (Strawberry) — over the same services/ layer as REST
+# GraphQL (Strawberry) - over the same services/ layer as REST
 graphql_router = GraphQLRouter(
     graphql_schema,
     context_getter=get_context,
@@ -79,14 +79,14 @@ graphql_router = GraphQLRouter(
 )
 app.include_router(graphql_router, prefix="/graphql")
 
-# gRPC / Connect (connect-python) — mounted ASGI app, browser-callable at /rpc
+# gRPC / Connect (connect-python) - mounted ASGI app, browser-callable at /rpc
 app.mount("/rpc", rpc_app)
 
-# MCP server (FastMCP) — remote Streamable HTTP transport at /mcp
+# MCP server (FastMCP) - remote Streamable HTTP transport at /mcp
 app.mount("/mcp", mcp_app)
 
 
 @app.get("/health", tags=["meta"], summary="Health check")
 async def health() -> dict[str, str]:
-    """Simple health endpoint — used by load balancers and smoke tests."""
+    """Simple health endpoint - used by load balancers and smoke tests."""
     return {"status": "ok", "service": "protocol-lab", "version": app.version}

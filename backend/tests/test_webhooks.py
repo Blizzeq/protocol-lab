@@ -16,7 +16,7 @@ requires_db = pytest.mark.skipif(
 
 
 def test_sign_and_verify_roundtrip():
-    """Pure unit test — no database, always runs."""
+    """Pure unit test - no database, always runs."""
     secret = generate_secret()
     msg_id = str(uuid.uuid4())
     ts = int(time.time())

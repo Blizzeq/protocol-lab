@@ -1,4 +1,4 @@
-"""ORM models for the "task board" domain — mapping of the `protocol_lab` schema.
+"""ORM models for the "task board" domain - mapping of the `protocol_lab` schema.
 
 This is the data layer shared by ALL paradigms (REST, GraphQL, MCP...).
 The tables were created by a Supabase migration (`protocol_lab_init`); these models only
@@ -41,7 +41,7 @@ class TaskPriority(enum.StrEnum):
 
 
 def _pg_enum(py_enum: type[enum.Enum], name: str) -> Enum:
-    # create_type=False — the type already exists in the database (created by a migration)
+    # create_type=False - the type already exists in the database (created by a migration)
     return Enum(
         py_enum,
         name=name,

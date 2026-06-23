@@ -1,4 +1,4 @@
-"""Task service — logic + authorization via the board owner."""
+"""Task service - logic + authorization via the board owner."""
 
 from __future__ import annotations
 

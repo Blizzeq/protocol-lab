@@ -3,7 +3,7 @@
 import type { CSSProperties } from "react";
 
 // Tiny dependency-free syntax highlighters that return HTML strings, injected via
-// dangerouslySetInnerHTML — ported 1:1 from the Claude Design prototype so the
+// dangerouslySetInnerHTML - ported 1:1 from the Claude Design prototype so the
 // JSON/code panels look identical (keys grey, strings cyan, numbers green, etc.).
 
 function esc(s: string): string {

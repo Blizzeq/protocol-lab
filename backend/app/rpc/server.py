@@ -60,7 +60,7 @@ class BoardServiceImpl:
                 )
             ).all()
             # "members" = distinct assignees on the board (the only honest count we
-            # can derive — there is no board-membership table).
+            # can derive - there is no board-membership table).
             members = (
                 await db.scalar(
                     select(func.count(func.distinct(Task.assignee_id))).where(

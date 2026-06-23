@@ -145,5 +145,5 @@ async def inbox(
 
 @router.post("/sink/fail")
 async def sink_fail() -> Response:
-    """Always returns 500 — point an endpoint here to watch retries and dead-lettering."""
+    """Always returns 500 - point an endpoint here to watch retries and dead-lettering."""
     return Response(status_code=500, content="intentional failure")

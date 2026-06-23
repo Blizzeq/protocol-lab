@@ -11,7 +11,7 @@ import { Caption, linkCyan, PageHeader, Panel, StepList, useAuth } from "../comp
 const GQ_STAGES = ["Pick fields", "Query shaped", "1 request", "Resolve", "Your fields"];
 
 // Display labels stay snake_case (the design), but the real Strawberry schema
-// camelCases names — so the actual query string uses the right-hand value.
+// camelCases names - so the actual query string uses the right-hand value.
 type Field = { key: string; label: string; line: string };
 const FIELDS: Field[] = [
   { key: "id", label: "id", line: "      id" },
@@ -241,7 +241,7 @@ export default function GraphqlPage() {
         >
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: 30, fontWeight: 800, color: "#fbbf24" }}>
-              {cmp ? cmp.restBytes : "—"} <span style={{ fontSize: 14, fontWeight: 400 }}>B</span>
+              {cmp ? cmp.restBytes : "-"} <span style={{ fontSize: 14, fontWeight: 400 }}>B</span>
             </div>
             <div style={{ fontSize: 10, color: "#8595ab", letterSpacing: ".09em", marginTop: 3 }}>
               REST · FULL OBJECTS
@@ -250,7 +250,7 @@ export default function GraphqlPage() {
           <div style={{ color: "#3f4d63", fontSize: 20 }}>vs</div>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: 30, fontWeight: 800, color: "#4ade80" }}>
-              {cmp ? cmp.gqBytes : "—"} <span style={{ fontSize: 14, fontWeight: 400 }}>B</span>
+              {cmp ? cmp.gqBytes : "-"} <span style={{ fontSize: 14, fontWeight: 400 }}>B</span>
             </div>
             <div style={{ fontSize: 10, color: "#8595ab", letterSpacing: ".09em", marginTop: 3 }}>
               GRAPHQL · YOUR FIELDS
@@ -265,7 +265,7 @@ export default function GraphqlPage() {
               textAlign: "center",
             }}
           >
-            <div style={{ fontSize: 22, fontWeight: 800, color: "#4ade80" }}>{cmp ? multLabel : "—"}</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: "#4ade80" }}>{cmp ? multLabel : "-"}</div>
             <div style={{ fontSize: 10, color: "#8595ab", marginTop: 3 }}>smaller</div>
           </div>
         </div>
@@ -274,7 +274,7 @@ export default function GraphqlPage() {
         </div>
         {!boardId && (
           <div style={{ color: "#fbbf24", fontSize: 10.5, marginTop: 12, textAlign: "center", lineHeight: 1.5 }}>
-            No board yet — sign in &amp; click &ldquo;Create sample data&rdquo; on Home, then run both.
+            No board yet - sign in &amp; click &ldquo;Create sample data&rdquo; on Home, then run both.
           </div>
         )}
       </Panel>
